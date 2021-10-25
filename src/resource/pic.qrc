@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pic/BackToop.ico</file>
+        <file>pic/close.png</file>
+    </qresource>
+</RCC>

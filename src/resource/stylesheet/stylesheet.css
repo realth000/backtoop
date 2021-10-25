@@ -1,0 +1,231 @@
+﻿QWidget{
+    font:13px;
+}
+
+QWidget#%1{
+    background:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));
+    border:1px solid rgb(64,66,68);
+}
+
+QHeaderView{
+    font:16px;
+    border:none;
+    color:rgb(240,255,255);
+    background-color:rgb(64,66,68);
+}
+
+QHeaderView::section:horizontal{
+    border-top:none;
+    border-left:none;
+    border-right:1px solid %2;
+    border-bottom:1px solid %2;
+    color:rgb(230,230,230);
+    background-color:rgb(45,45,45);
+}
+
+QHeaderView::section:last{
+        border-right:none;
+}
+
+QTabWidget{
+    background:rgb(35,35,35)}
+
+QTabBar::tab{
+    font:16px}
+
+QTabBar::tab:selected{
+    background-color:rgb(51,51,51)}
+
+QTableWidget{
+    font:17px;
+    border:1px solid %2;
+    outline:2xp solid rgb(255,0,0);
+    gridline-color:%2;
+    color:rgb(230,230,230);
+    background:%3
+}
+
+QTableWidget::item{
+    border:none}
+
+QTableWidget::item:selected{
+    color:rgb(240,255,255);
+    background-color:rgb(105,145,145);
+    outline:none;
+}
+
+QLabel#about_titleL{
+    color:rgb(175,200,210);
+    font:26px;
+    font-weight:bold;
+}
+
+QLabel#about_versionL{
+    font:15px;
+    font-weight:bold;
+}
+
+QLabel#about_timeL{
+    font:15px;
+}
+
+QLineEdit#logLE{
+    color:rgb(230,230,230);
+    border:none;
+    background-color:rgb(30,30,30);
+    font:14px;
+}
+
+QLineEdit{
+    color:rgb(240,255,255);
+    background:%3;
+    border:1px solid %2;
+    selection-background-color:rgb(93,94,95);
+}
+
+QMenu{
+    color:rgb(240,255,255);
+    background:%3;
+    border:1px solid %2;
+    selection-background-color:rgb(105,145,145);
+}
+
+QMenu::separator{
+    height:0px;
+    border:1px solid %2;
+}
+
+QTextEdit{
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));
+    border:1px solid rgb(55,85,100);
+    selection-color:rgb(240,255,255);
+    selection-background-color:rgb(93,94,95);
+}
+
+QTextEdit{
+    background:rgb(40,40,40);
+    border:none;
+}
+
+QTextEdit#logTE{
+    color:rgb(240,255,255);
+    border-right:1px solid %2;
+    border-top:1px solid %2;
+}
+
+QTextEdit#hintTE{
+    border-top:1px solid %2;
+}
+
+QTextBrowser#about_baseTB{
+    color:rgb(240,255,255);
+    font:15px;
+    border:1px solid %2;
+    font:15px;
+    background:transparent;
+}
+
+QGroupBox{
+    color:rgb(240,255,255);
+    background-color:%3;
+    border:1px solid %2;
+}
+
+QGroupBox#securityGB{
+    background-color:rgb(40,40,40);
+}
+
+QRadioButton{
+    color:rgb(240,255,255);
+}
+
+QPushButton#clearLogBtn{
+    background:transparent;
+    border:none;
+    color:rgb(240,255,255);
+}
+
+QPushButton#clearLogBtn:hover{
+    background:rgb(64,64,61);
+    border:none;
+}
+
+QPushButton#selectSavePathBtn{
+    background:transparent;
+    border:1px solid %2;
+    color:rgb(240,255,255);
+}
+
+QPushButton#selectSavePathBtn:hover{
+    background:rgb(64,64,61);
+}
+
+QPushButton#selectSavePathBtn:pressed{
+    background:rgb(55,55,55);
+}
+
+QPushButton#selectBackupPathBtn{
+    background:transparent;
+    border:1px solid %2;
+    color:rgb(240,255,255);
+}
+
+QPushButton#selectBackupPathBtn:hover{
+    background:rgb(64,64,61);
+}
+
+QPushButton#selectBackupPathBtn:pressed{
+    background:rgb(55,55,55);
+}
+
+QLabel{
+    color:rgb(240,255,255);
+}
+
+QCheckBox{
+    color:rgb(240,255,255);
+}
+
+QCheckBox:disabled{
+    color:rgb(128,128,128);
+}
+
+QMessageBox{
+    color:rgb(240,255,255);
+    background:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));
+}
+
+QMessageBox QPushButton{
+    background:transparent;
+    border:1px solid %2;
+    color:rgb(240,255,255);
+}
+
+QComboBox QAbstractItemView{
+    border:1px solid #375564;
+    outline:none;
+}
+
+/*QComboBox{
+    color:#f0ffff;
+    border:1px solid #375564;
+    background:rgb(49,49,49);
+    border-radius:0px;
+    selection-color:#f0ffff;
+}
+
+QComboBox QAbstractItemView{
+    border:1px solid #375564;
+    outline:none;
+}
+
+QComboBox QAbstractItemView::item{
+    color:#f0ffff;
+    height:20px;
+    background:rgb(49,49,49);
+}
+
+QComboBox QAbstractItemView::item:selected{
+    background-color:rgb(105,145,145);
+}*/
+

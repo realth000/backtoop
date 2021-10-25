@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>stylesheet/stylesheet.css</file>
+        <file>stylesheet/stylesheet_messageboxexx.css</file>
+    </qresource>
+</RCC>

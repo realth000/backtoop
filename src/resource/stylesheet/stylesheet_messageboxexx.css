@@ -1,0 +1,40 @@
+﻿QWidget{
+    font-size:13px;
+}
+
+QWidget#%1{
+    background:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));
+    border:1px solid rgb(64,66,68);
+}
+
+QTextEdit{
+    color:rgb(240,255,255);
+    background:transparent;
+    border:none;
+    selection-background-color:rgb(93,94,95);
+}
+
+QGroupBox{
+    color:rgb(240,255,255);
+    background-color:%3;
+    border:1px solid %2;
+}
+
+QPushButton{
+    background:transparent;
+    border:1px solid %2;
+    color:rgb(240,255,255);
+}
+
+QPushButton:hover{
+    background:rgb(64,64,61);
+}
+
+QPushButton:pressed{
+    background:rgb(55,55,55);
+}
+
+QLabel{
+    color:rgb(240,255,255);
+}
+

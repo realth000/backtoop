@@ -8,7 +8,7 @@ QWidget#%1{
 }
 
 QHeaderView{
-    font:16px;
+    font:14px;
     border:none;
     color:rgb(240,255,255);
     background-color:rgb(64,66,68);
@@ -24,20 +24,32 @@ QHeaderView::section:horizontal{
 }
 
 QHeaderView::section:last{
-        border-right:none;
+    border-right:none;
 }
 
 QTabWidget{
-    background:rgb(35,35,35)}
+    background:rgb(35,35,35)
+}
 
 QTabBar::tab{
-    font:16px}
+    font:16px
+}
 
 QTabBar::tab:selected{
-    background-color:rgb(51,51,51)}
+    background-color:rgb(51,51,51)
+}
+
+QTreeView{
+    font:12px;
+    border:1px solid %2;
+    outline:2xp solid rgb(255,0,0);
+    gridline-color:%2;
+    color:rgb(230,230,230);
+    background:%3
+}
 
 QTableWidget{
-    font:17px;
+    font:15px;
     border:1px solid %2;
     outline:2xp solid rgb(255,0,0);
     gridline-color:%2;
@@ -46,7 +58,8 @@ QTableWidget{
 }
 
 QTableWidget::item{
-    border:none}
+    border:none
+}
 
 QTableWidget::item:selected{
     color:rgb(240,255,255);
@@ -54,27 +67,27 @@ QTableWidget::item:selected{
     outline:none;
 }
 
-QLabel#about_titleL{
-    color:rgb(175,200,210);
-    font:26px;
-    font-weight:bold;
-}
-
-QLabel#about_versionL{
-    font:15px;
-    font-weight:bold;
-}
-
-QLabel#about_timeL{
-    font:15px;
-}
-
-QLineEdit#logLE{
+QLineEdit#logLineEdit{
     color:rgb(230,230,230);
     border:none;
     background-color:rgb(30,30,30);
     font:14px;
 }
+
+QLineEdit#srcDirHintLineEdit{
+    color:rgb(230,230,230);
+    border:1px solid %2;
+    background:transparent;
+    font:14px;
+}
+
+QLineEdit#dstDirHintLineEdit{
+    color:rgb(230,230,230);
+    border:1px solid %2;
+    background:transparent;
+    font:14px;
+}
+
 
 QLineEdit{
     color:rgb(240,255,255);
@@ -107,75 +120,14 @@ QTextEdit{
     border:none;
 }
 
-QTextEdit#logTE{
-    color:rgb(240,255,255);
-    border-right:1px solid %2;
-    border-top:1px solid %2;
-}
-
-QTextEdit#hintTE{
-    border-top:1px solid %2;
-}
-
-QTextBrowser#about_baseTB{
-    color:rgb(240,255,255);
-    font:15px;
-    border:1px solid %2;
-    font:15px;
-    background:transparent;
-}
-
 QGroupBox{
     color:rgb(240,255,255);
     background-color:%3;
     border:1px solid %2;
 }
 
-QGroupBox#securityGB{
-    background-color:rgb(40,40,40);
-}
-
 QRadioButton{
     color:rgb(240,255,255);
-}
-
-QPushButton#clearLogBtn{
-    background:transparent;
-    border:none;
-    color:rgb(240,255,255);
-}
-
-QPushButton#clearLogBtn:hover{
-    background:rgb(64,64,61);
-    border:none;
-}
-
-QPushButton#selectSavePathBtn{
-    background:transparent;
-    border:1px solid %2;
-    color:rgb(240,255,255);
-}
-
-QPushButton#selectSavePathBtn:hover{
-    background:rgb(64,64,61);
-}
-
-QPushButton#selectSavePathBtn:pressed{
-    background:rgb(55,55,55);
-}
-
-QPushButton#selectBackupPathBtn{
-    background:transparent;
-    border:1px solid %2;
-    color:rgb(240,255,255);
-}
-
-QPushButton#selectBackupPathBtn:hover{
-    background:rgb(64,64,61);
-}
-
-QPushButton#selectBackupPathBtn:pressed{
-    background:rgb(55,55,55);
 }
 
 QLabel{

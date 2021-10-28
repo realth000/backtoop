@@ -3,6 +3,10 @@
 #include <QFont>
 #include "commoninclude.h"
 
+#ifdef ENABLE_VID
+#include "vld.h"
+#endif
+
 int main(int argc, char *argv[])
 {
     QFont appFont;
@@ -14,7 +18,7 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     a.setFont(appFont);
-    mainui w;
+    MainUi w;
     w.show();
     return a.exec();
 }

@@ -11,6 +11,20 @@ VERSION = 0.1.0
 INCLUDEPATH += src/include/
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+#DEFINES += COMPILE_VID
+
+win32 {
+    TARGET = "BackToop"
+    CONFIG(debug,debug|release){
+        INCLUDEPATH += C:\VisualLeakDetector\include
+        DEPENDPATH += C:\VisualLeakDetector\include
+        if(contains(DEFINES, COMPILE_VID)) {
+            LIBS += -LC:/VisualLeakDetector/lib/Win64 -lvld
+            DEFINES += ENABLE_VID
+        }
+
+    }
+}
 
 win32-msvc* {
   QMAKE_CXXFLAGS += /utf-8
@@ -24,6 +38,7 @@ SOURCES += \
     src/gui/mainui.cpp \
     src/utils/qssinstaller.cpp \
     src/utils/style/proxystyle.cpp \
+    src/utils/watchfilemodel.cpp \
     src/utils/widget/lineeditex.cpp \
     src/utils/widget/messageboxexx.cpp \
     src/utils/widget/tablewidgetex.cpp \
@@ -34,6 +49,7 @@ HEADERS += \
     src/gui/mainui.h \
     src/include/qssinstaller.h \
     src/include/proxystyle.h \
+    src/include/watchfilemodel.h \
     src/utils/widget/lineeditex.h \
     src/utils/widget/messageboxexx.h \
     src/utils/widget/tablewidgetex.h \

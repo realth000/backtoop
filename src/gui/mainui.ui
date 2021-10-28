@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>mainui</class>
- <widget class="QWidget" name="mainui">
+ <class>MainUi</class>
+ <widget class="QWidget" name="MainUi">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1320</width>
+    <height>830</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,12 +18,98 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>801</width>
+     <width>1320</width>
      <height>30</height>
     </rect>
    </property>
    <property name="title">
     <string/>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="logLineEdit">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>805</y>
+     <width>1320</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QTreeView" name="dstDirTreeView">
+   <property name="geometry">
+    <rect>
+     <x>790</x>
+     <y>280</y>
+     <width>530</width>
+     <height>500</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="dstDirHintLineEdit">
+   <property name="geometry">
+    <rect>
+     <x>790</x>
+     <y>780</y>
+     <width>530</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QTreeView" name="srcDirTreeView">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>280</y>
+     <width>530</width>
+     <height>500</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="srcDirHintLineEdit">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>780</y>
+     <width>530</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="srcDirTreeViewNameLabel">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>255</y>
+     <width>530</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>源路径</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="dstDirTreeViewNameLabel">
+   <property name="geometry">
+    <rect>
+     <x>790</x>
+     <y>255</y>
+     <width>530</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>备份路径</string>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="backupPathsTableWidget">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>30</y>
+     <width>1060</width>
+     <height>225</height>
+    </rect>
    </property>
   </widget>
  </widget>

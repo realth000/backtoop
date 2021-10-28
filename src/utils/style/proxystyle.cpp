@@ -490,13 +490,13 @@ void CheckBoxStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyle
 #endif
 
                 painter->save();
-                painter->setPen(QColor(115,120,140));
 #ifdef CHECKBOX_USE_RG
                 painter->setBrush(QBrush(indicatorColorGradient));
 #else
-                painter->setPen(QColor(115,120,140));
+                painter->setPen(QColor(240,255,255));
                 painter->setBrush(QBrush(QColor(240,255,255)));
                 painter->drawRect(iRect);
+                painter->setPen(QColor(115,120,140));
                 painter->setBrush(QColor(55,85,100));
                 painter->drawPolygon(check, 6);
 #endif
@@ -505,7 +505,7 @@ void CheckBoxStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyle
             }
             else{
                 painter->save();
-                painter->setPen(QColor(115,120,140));
+                painter->setPen(QColor(240,255,255));
                 painter->setBrush(QBrush(QColor(240,255,255)));
                 painter->drawRect(iRect);
                 painter->restore();

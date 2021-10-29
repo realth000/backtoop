@@ -2,5 +2,9 @@
     <qresource prefix="/">
         <file>pic/BackToop.ico</file>
         <file>pic/close.png</file>
+        <file>pic/delete.png</file>
+        <file>pic/false.png</file>
+        <file>pic/refresh.png</file>
+        <file>pic/true.png</file>
     </qresource>
 </RCC>

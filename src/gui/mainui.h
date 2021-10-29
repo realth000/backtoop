@@ -40,6 +40,7 @@ private:
     CheckBoxStyle *checkBoxStyle = nullptr;
     VerticalScrollBarStyle *vScrollBarStyle = nullptr;
     HorizontalScrollBarStyle *hScrollBarStyle = nullptr;
+    PushButtonStyle *pushbuttonStyle = nullptr;
 
     QString currentSrcPath;
     QString currentDstPath;

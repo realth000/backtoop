@@ -8,7 +8,7 @@ VERSION = 0.1.0
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-INCLUDEPATH += src/include/
+INCLUDEPATH += src/include/ src
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 #DEFINES += COMPILE_VID
@@ -35,6 +35,7 @@ win32-msvc* {
 SOURCES += \
     src/core/commoninclude.cpp \
     src/core/main.cpp \
+    src/gui/copyprogresswindow.cpp \
     src/gui/mainui.cpp \
     src/utils/iconinstaller.cpp \
     src/utils/qssinstaller.cpp \
@@ -46,6 +47,7 @@ SOURCES += \
     src/utils/widget/titlebar.cpp
 
 HEADERS += \
+    src/gui/copyprogresswindow.h \
     src/include/commoninclude.h \
     src/gui/mainui.h \
     src/include/iconinstaller.h \
@@ -58,6 +60,7 @@ HEADERS += \
     src/utils/widget/titlebar.h
 
 FORMS += \
+    src/gui/copyprogresswindow.ui \
     src/gui/mainui.ui \
     src/utils/widget/messageboxexx.ui
 

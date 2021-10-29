@@ -6,5 +6,9 @@
         <file>pic/false.png</file>
         <file>pic/refresh.png</file>
         <file>pic/true.png</file>
+        <file>pic/opentable.png</file>
+        <file>pic/run.png</file>
+        <file>pic/save.png</file>
+        <file>pic/no.png</file>
     </qresource>
 </RCC>

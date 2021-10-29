@@ -8,6 +8,7 @@
 #include "commoninclude.h"
 #include "qssinstaller.h"
 #include "iconinstaller.h"
+#include "copyprogresswindow.h"
 
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent)
@@ -84,6 +85,8 @@ void MainUi::initUi()
     ui->backupPathsTableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->backupPathsTableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->backupPathsTableWidget->horizontalHeader()->setHighlightSections(false);
+    ui->backupPathsTableWidget->horizontalScrollBar()->setStyle(hScrollBarStyle);
+    ui->backupPathsTableWidget->verticalScrollBar()->setStyle(vScrollBarStyle);
 
 
     // Display log
@@ -123,10 +126,13 @@ void MainUi::initUi()
     connect(ui->dstDirTreeView, &QTreeView::expanded,  this, &MainUi::getDstModelInfoFromIndex, Qt::UniqueConnection);
 
     // init pushbutton
+    IconInstaller::installPushButtonIcon(ui->openPathTableJsonButton, ":/pic/opentable.png");
     IconInstaller::installPushButtonIcon(ui->refreshPathTableButton, ":/pic/refresh.png");
+    IconInstaller::installPushButtonIcon(ui->savePathTableButton, ":/pic/save.png");
     IconInstaller::installPushButtonIcon(ui->allSelectButton, ":/pic/true.png");
     IconInstaller::installPushButtonIcon(ui->reverseSelectButton, ":/pic/false.png");
     IconInstaller::installPushButtonIcon(ui->deletePathsTableButton, ":/pic/delete.png");
+    IconInstaller::installPushButtonIcon(ui->startBackupButton, ":/pic/run.png");
     ui->openPathTableJsonButton->setStyle(pushbuttonStyle);
     ui->refreshPathTableButton->setStyle(pushbuttonStyle);
     ui->savePathTableButton->setStyle(pushbuttonStyle);
@@ -147,6 +153,13 @@ void MainUi::initConfig()
 {
     addBackupPath("test", "test Time", "D:/Storage", "C:/QtProjects_build");
     addBackupPath("test", "test Time", "D:/Programming", "D:/Tools");
+    addBackupPath("test", "test Time", "D:/Storage/Music", "D:/Storage/Musie_test");
+    addBackupPath("test", "test Time", "D:/Storage", "C:/QtProjects_build");
+    addBackupPath("test", "test Time", "D:/Programming", "D:/Tools");
+    addBackupPath("test", "test Time", "D:/Storage/Music", "D:/Storage/Musie_test");
+    addBackupPath("test", "test Time", "D:/Storage", "C:/QtProjects_build");
+    addBackupPath("test", "test Time", "D:/Programming", "D:/Tools");
+    addBackupPath("test", "test Time", "D:/Storage/Music", "D:/Storage/Musie_test");
 }
 
 // add checkbox in tablewidget to select
@@ -181,6 +194,29 @@ void MainUi::addBackupPath(QString name, QString time, QString srcPath, QString 
     ui->backupPathsTableWidget->setItem(insertPosition, 4, new QTableWidgetItem(dstPath));
     ui->backupPathsTableWidget->item(insertPosition, 3)->setForeground(QDir(srcPath).exists() ? QColor(BACKUPPATH_ITEM_EXIST_TEXT_COLOR) : QColor(BACKUPPATH_ITEM_NOT_EXIST_TEXT_COLOR));
     ui->backupPathsTableWidget->item(insertPosition, 4)->setForeground(QDir(dstPath).exists() ? QColor(BACKUPPATH_ITEM_EXIST_TEXT_COLOR) : QColor(BACKUPPATH_ITEM_NOT_EXIST_TEXT_COLOR));
+}
+
+void MainUi::deleteSelectedPath()
+{
+
+}
+
+// 这是计算备份路径文件夹下的文件数目（不包括文件夹）的函数
+// 用来传给processUI，能弄个进度条，显示文件数量。
+void MainUi::getFileCount(QString path, quint64 &num)
+{
+    QDir dir(path);
+    QFileInfoList fileInfoList = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    foreach ( QFileInfo fileInfo, fileInfoList )
+    {
+        num++;
+        QCoreApplication::processEvents();
+        if ( fileInfo.isDir() )
+        {
+            num--;
+            getFileCount(fileInfo.filePath(), num);
+        }
+    }
 }
 
 void MainUi::bakChbStateChanged(int state)
@@ -337,7 +373,6 @@ void MainUi::on_backupPathsTableWidget_itemClicked(QTableWidgetItem *item)
             ui->srcDirHintLineEdit->setText("路径不存在");
             ui->backupPathsTableWidget->item(ui->backupPathsTableWidget->row(item), 3)->setForeground(QColor(BACKUPPATH_ITEM_NOT_EXIST_TEXT_COLOR));
         }
-
     }
     else{
         if(srcPathWatchModel != nullptr){
@@ -408,5 +443,82 @@ void MainUi::on_backupPathsTableWidget_itemClicked(QTableWidgetItem *item)
             ui->backupPathsTableWidget->item(ui->backupPathsTableWidget->row(item), 4)->setForeground(QColor(BACKUPPATH_ITEM_NOT_EXIST_TEXT_COLOR));
         }
     }
+}
+
+
+void MainUi::on_allSelectButton_clicked()
+{
+    foreach(QCheckBox *chb, bakPathChbList){
+        if(!chb->isChecked()){
+            bakChbCheckedCount++;
+        }
+        chb->setChecked(true);
+    }
+}
+
+
+void MainUi::on_reverseSelectButton_clicked()
+{
+    bool oldState;
+    foreach(QCheckBox *chb, bakPathChbList){
+        oldState = chb->isChecked();
+        oldState == true ? bakChbCheckedCount-- : bakChbCheckedCount++;
+        chb->setChecked(!oldState);
+    }
+}
+
+
+void MainUi::on_deletePathsTableButton_clicked()
+{
+    if(bakChbCheckedCount <= 0){
+        return;
+    }
+    QString keyString;
+    for(int tableRowPos = 0; tableRowPos < ui->backupPathsTableWidget->rowCount();){
+        if(bakPathChbList[tableRowPos]->isChecked()){
+            keyString = ui->backupPathsTableWidget->item(tableRowPos, 1)->text();
+            delete bakPathChbList[tableRowPos];
+            bakPathChbList.removeAt(tableRowPos);
+            delete srcPathWatchModelMap.value(keyString);
+            delete dstPathWatchModelMap.value(keyString);
+            srcPathWatchModelMap.remove(keyString);
+            dstPathWatchModelMap.remove(keyString);
+            srcModelIndexList.remove(keyString);
+            dstModelIndexList.remove(keyString);
+            srcMapCountMap.remove(keyString);
+            dstMapCountMap.remove(keyString);
+            ui->backupPathsTableWidget->removeRow(tableRowPos);
+            bakChbCheckedCount--;
+            if(bakChbCheckedCount <= 0){
+                break;
+            }
+            qDebug() << "delete at pos" << tableRowPos;
+        }
+        else{
+            tableRowPos++;
+        }
+        qDebug() << "123";
+    }
+    bakChbCheckedCount = 0;
+}
+
+void MainUi::on_startBackupButton_clicked()
+{
+    QString srcPath, dstPath;
+    quint64 fileCount = 0;
+    CopyProgressWindow *copyWindow = new CopyProgressWindow();
+
+    for(int pathPos = 0; pathPos < ui->backupPathsTableWidget->rowCount(); pathPos++){
+        if(bakPathChbList[pathPos]->isChecked()){
+            srcPath = ui->backupPathsTableWidget->item(pathPos, 3)->text();
+            dstPath = ui->backupPathsTableWidget->item(pathPos, 4)->text();
+            if(!(QDir(srcPath)).exists() || !(QDir(dstPath)).exists()){
+                continue;
+            }
+            getFileCount(srcPath, fileCount);
+        }
+    }
+    copyWindow->setFileCountTotal(fileCount);
+    copyWindow->exec();
 }
 

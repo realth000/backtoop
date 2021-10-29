@@ -35,7 +35,7 @@ public slots:
 private:
     Ui::MainUi *ui;
     QList<QCheckBox *> bakPathChbList;
-    int bakChbCheckedCount = 0;
+    int bakChbCheckedCount = 0; // selected path count
     // styles
     CheckBoxStyle *checkBoxStyle = nullptr;
     VerticalScrollBarStyle *vScrollBarStyle = nullptr;
@@ -64,6 +64,8 @@ private:
     void initConfig();
     QWidget* addCheckBox();
     void addBackupPath(QString name, QString time, QString srcPath, QString dstPath);
+    void deleteSelectedPath();
+    void getFileCount(QString path, quint64 &num);
 
 private slots:
     void bakChbStateChanged(int state);
@@ -75,5 +77,9 @@ private slots:
     void getSrcModelInfoFromString(QString srcPath);
     void getDstModelInfoFromString(QString dstPath);
     void on_backupPathsTableWidget_itemClicked(QTableWidgetItem *item);
+    void on_allSelectButton_clicked();
+    void on_reverseSelectButton_clicked();
+    void on_deletePathsTableButton_clicked();
+    void on_startBackupButton_clicked();
 };
 #endif // MAINUI_H

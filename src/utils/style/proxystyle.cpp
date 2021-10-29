@@ -155,13 +155,6 @@ const int text_offset = 3;                  // 文字左侧和图标的距离
 const int pushButton_iconWidth = 30;        // 图标的长度和宽度
 const int pushButton_iconHeight = 30;
 
-// normalColor: 普通状态时，为使PushButton整个透明，需要把边界的颜色设置为与背景颜色相同
-PushButtonStyle::PushButtonStyle(QString normalColor):
-    normalColor(normalColor)
-{
-
-}
-
 void PushButtonStyle::drawControl(QStyle::ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     Q_UNUSED(widget)
@@ -193,10 +186,8 @@ void PushButtonStyle::drawControl(QStyle::ControlElement element, const QStyleOp
                 else{
                     // 背景颜色
                     painter->save();
-                    painter->setPen(QColor(normalColor));
-                    painter->setBrush(QColor(normalColor));
-                    QPen emptyPen;
-                    emptyPen.setWidth(0);
+                    painter->setPen(Qt::transparent);
+                    painter->setBrush(Qt::transparent);
                     // 不要用painter->setCompositionMode(QPainter::CompositionMode_Clear);，会把border的setPen覆盖掉使之失效
                     //                    painter->setCompositionMode(QPainter::CompositionMode_Clear);
                     //                    painter->setBackgroundMode(Qt::TransparentMode);

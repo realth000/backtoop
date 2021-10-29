@@ -36,6 +36,7 @@ SOURCES += \
     src/core/commoninclude.cpp \
     src/core/main.cpp \
     src/gui/mainui.cpp \
+    src/utils/iconinstaller.cpp \
     src/utils/qssinstaller.cpp \
     src/utils/style/proxystyle.cpp \
     src/utils/watchfilemodel.cpp \
@@ -47,6 +48,7 @@ SOURCES += \
 HEADERS += \
     src/include/commoninclude.h \
     src/gui/mainui.h \
+    src/include/iconinstaller.h \
     src/include/qssinstaller.h \
     src/include/proxystyle.h \
     src/include/watchfilemodel.h \

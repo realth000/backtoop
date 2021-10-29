@@ -1,12 +1,13 @@
 ﻿#include "mainui.h"
 #include "ui_mainui.h"
-#include "commoninclude.h"
-#include "qssinstaller.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QDir>
 #include <QDebug>
 #include <QScrollBar>
+#include "commoninclude.h"
+#include "qssinstaller.h"
+#include "iconinstaller.h"
 
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent)
@@ -25,6 +26,7 @@ MainUi::~MainUi()
     delete checkBoxStyle;
     delete vScrollBarStyle;
     delete hScrollBarStyle;
+    delete pushbuttonStyle;
 
     //delete view
     delete dirViewHeaderModel;
@@ -46,6 +48,7 @@ void MainUi::initUi()
     checkBoxStyle = new CheckBoxStyle;
     vScrollBarStyle = new VerticalScrollBarStyle;
     hScrollBarStyle = new HorizontalScrollBarStyle;
+    pushbuttonStyle = new PushButtonStyle;
 
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setFixedSize(this->width(), this->height());
@@ -119,7 +122,23 @@ void MainUi::initUi()
     connect(ui->dstDirTreeView, &QTreeView::collapsed, this, &MainUi::getDstModelInfoFromIndex, Qt::UniqueConnection);
     connect(ui->dstDirTreeView, &QTreeView::expanded,  this, &MainUi::getDstModelInfoFromIndex, Qt::UniqueConnection);
 
+    // init pushbutton
+    IconInstaller::installPushButtonIcon(ui->refreshPathTableButton, ":/pic/refresh.png");
+    IconInstaller::installPushButtonIcon(ui->allSelectButton, ":/pic/true.png");
+    IconInstaller::installPushButtonIcon(ui->reverseSelectButton, ":/pic/false.png");
+    IconInstaller::installPushButtonIcon(ui->deletePathsTableButton, ":/pic/delete.png");
+    ui->openPathTableJsonButton->setStyle(pushbuttonStyle);
+    ui->refreshPathTableButton->setStyle(pushbuttonStyle);
+    ui->savePathTableButton->setStyle(pushbuttonStyle);
+    ui->allSelectButton->setStyle(pushbuttonStyle);
+    ui->reverseSelectButton->setStyle(pushbuttonStyle);
+    ui->deletePathsTableButton->setStyle(pushbuttonStyle);
+    ui->startBackupButton->setStyle(pushbuttonStyle);
 
+    // init checkbox
+    ui->replaceFileCheckBox->setStyle(checkBoxStyle);
+    ui->checkSumCheckBox->setStyle(checkBoxStyle);
+    ui->resetDirCheckBox->setStyle(checkBoxStyle);
 
     log("启动");
 }
@@ -295,7 +314,7 @@ void MainUi::on_backupPathsTableWidget_itemClicked(QTableWidgetItem *item)
             disconnect(srcPathWatchModel, nullptr, this, nullptr);
         }
         if(isSrcExists){
-            ui->backupPathsTableWidget->item(ui->backupPathsTableWidget->row(item), 3)->setForeground(Qt::black);
+            ui->backupPathsTableWidget->item(ui->backupPathsTableWidget->row(item), 3)->setForeground(QColor(BACKUPPATH_ITEM_EXIST_TEXT_COLOR));
             srcPathWatchModel = srcPathWatchModelMap[keyString];
             srcPathWatchModel->setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
             ui->srcDirTreeView->setModel(srcPathWatchModel);
@@ -312,11 +331,11 @@ void MainUi::on_backupPathsTableWidget_itemClicked(QTableWidgetItem *item)
             if(srcMapCountMap.contains(keyString)){
                 ui->srcDirHintLineEdit->setText("共" + QString::number(srcMapCountMap[keyString]) + "项");
             }
-            ui->backupPathsTableWidget->item(ui->backupPathsTableWidget->row(item), 3)->setForeground(Qt::black);
+            ui->backupPathsTableWidget->item(ui->backupPathsTableWidget->row(item), 3)->setForeground(QColor(BACKUPPATH_ITEM_EXIST_TEXT_COLOR));
         }
         else{
             ui->srcDirHintLineEdit->setText("路径不存在");
-            ui->backupPathsTableWidget->item(ui->backupPathsTableWidget->row(item), 3)->setForeground(Qt::red);
+            ui->backupPathsTableWidget->item(ui->backupPathsTableWidget->row(item), 3)->setForeground(QColor(BACKUPPATH_ITEM_NOT_EXIST_TEXT_COLOR));
         }
 
     }

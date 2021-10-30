@@ -1,5 +1,6 @@
 ﻿#ifndef ICONINSTALLER_H
 #define ICONINSTALLER_H
+
 #include <QString>
 #include <QPushButton>
 

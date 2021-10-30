@@ -17,9 +17,14 @@ public:
     ~CopyProgressWindow();
     void setFileCountTotal(quint64 count);
 
+public slots:
+    void updateSuccessCount(QString filePath = "");
+    void updateFailedCount(QString filePath = "");
+
 private:
     Ui::CopyProgressWindow *ui;
     PushButtonStyle *pushButtonStyle = nullptr;
+    quint64 fileCountCopied = 0;
     quint64 fileCountTotal;
 
     void initUi();

@@ -5,10 +5,12 @@
 #include <QDir>
 #include <QDebug>
 #include <QScrollBar>
+#include <QThread>
 #include "commoninclude.h"
 #include "qssinstaller.h"
 #include "iconinstaller.h"
 #include "copyprogresswindow.h"
+#include "core/copyworker.h"
 
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent)
@@ -151,15 +153,7 @@ void MainUi::initUi()
 
 void MainUi::initConfig()
 {
-    addBackupPath("test", "test Time", "D:/Storage", "C:/QtProjects_build");
-    addBackupPath("test", "test Time", "D:/Programming", "D:/Tools");
-    addBackupPath("test", "test Time", "D:/Storage/Music", "D:/Storage/Musie_test");
-    addBackupPath("test", "test Time", "D:/Storage", "C:/QtProjects_build");
-    addBackupPath("test", "test Time", "D:/Programming", "D:/Tools");
-    addBackupPath("test", "test Time", "D:/Storage/Music", "D:/Storage/Musie_test");
-    addBackupPath("test", "test Time", "D:/Storage", "C:/QtProjects_build");
-    addBackupPath("test", "test Time", "D:/Programming", "D:/Tools");
-    addBackupPath("test", "test Time", "D:/Storage/Music", "D:/Storage/Musie_test");
+    addBackupPath("test", "test Time", "C:/QtProjects/0/test", "D:/Storage/3");
 }
 
 // add checkbox in tablewidget to select
@@ -506,6 +500,7 @@ void MainUi::on_startBackupButton_clicked()
 {
     QString srcPath, dstPath;
     quint64 fileCount = 0;
+    CopyTaskVector copyTaskVector;
     CopyProgressWindow *copyWindow = new CopyProgressWindow();
 
     for(int pathPos = 0; pathPos < ui->backupPathsTableWidget->rowCount(); pathPos++){
@@ -516,9 +511,22 @@ void MainUi::on_startBackupButton_clicked()
                 continue;
             }
             getFileCount(srcPath, fileCount);
+            copyTaskVector.append(CopyTask(srcPath, dstPath));
         }
     }
     copyWindow->setFileCountTotal(fileCount);
-    copyWindow->exec();
+    copyWindow->show();
+    QThread *copyThread = new QThread();
+    CopyWorker *copyWorker = new CopyWorker();
+    copyWorker->moveToThread(copyThread);
+    copyWorker->setTask(copyTaskVector);
+    connect(copyThread, &QThread::started, copyWorker, &CopyWorker::copyStart);
+    connect(copyWorker, &CopyWorker::copyFinished, copyThread, &QThread::quit);
+    connect(copyThread, &QThread::finished, copyWorker, &CopyWorker::deleteLater);
+
+    connect(copyWorker, &CopyWorker::copyOneFileSucceed, copyWindow, &CopyProgressWindow::updateSuccessCount);
+    connect(copyWorker, &CopyWorker::copyOneFileFailed, copyWindow, &CopyProgressWindow::updateFailedCount);
+
+    copyThread->start();
 }
 

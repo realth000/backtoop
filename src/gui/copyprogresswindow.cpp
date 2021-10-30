@@ -24,9 +24,24 @@ void CopyProgressWindow::setFileCountTotal(quint64 count)
     updateFileCount(0);
 }
 
+void CopyProgressWindow::updateSuccessCount(QString filePath)
+{
+    fileCountCopied++;
+    updateFileCount(fileCountCopied);
+    ui->copyLogTextEdit->append(QString("Success: %1").arg(filePath));
+}
+
+void CopyProgressWindow::updateFailedCount(QString filePath)
+{
+    fileCountCopied++;
+    updateFileCount(fileCountCopied);
+    ui->copyLogTextEdit->append(QString("Failed: %1").arg(filePath));
+}
+
 void CopyProgressWindow::initUi()
 {
     pushButtonStyle = new PushButtonStyle();
+    this->setWindowModality(Qt::ApplicationModal);
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setStyleSheet(QssInstaller::QssInstallFromFile(":/stylesheet/stylesheet_copyprogresswindow.css").arg(this->objectName(), "rgb(55,85,100)",
                                  "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
@@ -49,4 +64,5 @@ void CopyProgressWindow::initUi()
 void CopyProgressWindow::updateFileCount(quint64 alreadyCopiedCount)
 {
     ui->copyCountLabel->setText(QString("%1/%2").arg(alreadyCopiedCount).arg(fileCountTotal));
+    ui->copyProgressBar->setValue(100*alreadyCopiedCount/fileCountTotal);
 }

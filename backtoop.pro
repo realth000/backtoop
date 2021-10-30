@@ -34,6 +34,7 @@ win32-msvc* {
 
 SOURCES += \
     src/core/commoninclude.cpp \
+    src/core/copyworker.cpp \
     src/core/main.cpp \
     src/gui/copyprogresswindow.cpp \
     src/gui/mainui.cpp \
@@ -47,6 +48,7 @@ SOURCES += \
     src/utils/widget/titlebar.cpp
 
 HEADERS += \
+    src/core/copyworker.h \
     src/gui/copyprogresswindow.h \
     src/include/commoninclude.h \
     src/gui/mainui.h \

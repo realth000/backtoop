@@ -1,10 +1,9 @@
 ﻿#ifndef COMMONINCLUDE_H
 #define COMMONINCLUDE_H
 
-//#include <QWidget>
-//#include "encryption/encrypted.h"
 #include <QDateTime>
 #include <QMap>
+#include <QString>
 
 #define TO_STR1(I1) #I1
 #define TO_STR2(I2) TO_STR1(I2)
@@ -80,5 +79,8 @@
 #define BACKUPPATH_ITEM_NOT_EXIST_TEXT_COLOR "#cd1e2a"
 
 #define KEYMAP_JSON_ENGINE_VERSION "1.0"
+
+typedef QPair<QString, QString> CopyTask;
+typedef QVector<QPair<QString, QString>> CopyTaskVector;
 
 #endif // COMMONINCLUDE_H

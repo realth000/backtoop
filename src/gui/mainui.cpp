@@ -502,6 +502,8 @@ void MainUi::on_startBackupButton_clicked()
     quint64 fileCount = 0;
     CopyTaskVector copyTaskVector;
     CopyProgressWindow *copyWindow = new CopyProgressWindow();
+    // parent not set, use Qt::WA_DeleteOnClose to recycle itself after close()
+    copyWindow->setAttribute(Qt::WA_DeleteOnClose);
 
     for(int pathPos = 0; pathPos < ui->backupPathsTableWidget->rowCount(); pathPos++){
         if(bakPathChbList[pathPos]->isChecked()){
@@ -514,6 +516,10 @@ void MainUi::on_startBackupButton_clicked()
             copyTaskVector.append(CopyTask(srcPath, dstPath));
         }
     }
+    if(copyTaskVector.length() <= 0){
+        delete copyWindow;
+        return;
+    }
     copyWindow->setFileCountTotal(fileCount);
     copyWindow->show();
     QThread *copyThread = new QThread();
@@ -523,6 +529,7 @@ void MainUi::on_startBackupButton_clicked()
     connect(copyThread, &QThread::started, copyWorker, &CopyWorker::copyStart);
     connect(copyWorker, &CopyWorker::copyFinished, copyThread, &QThread::quit);
     connect(copyThread, &QThread::finished, copyWorker, &CopyWorker::deleteLater);
+    connect(copyThread, &QThread::finished, copyThread, &QThread::deleteLater);
 
     connect(copyWorker, &CopyWorker::copyOneFileSucceed, copyWindow, &CopyProgressWindow::updateSuccessCount);
     connect(copyWorker, &CopyWorker::copyOneFileFailed, copyWindow, &CopyProgressWindow::updateFailedCount);

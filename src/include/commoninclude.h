@@ -2,8 +2,9 @@
 #define COMMONINCLUDE_H
 
 #include <QDateTime>
-#include <QMap>
+#include <QVector>
 #include <QString>
+#include <QPair>
 
 #define TO_STR1(I1) #I1
 #define TO_STR2(I2) TO_STR1(I2)

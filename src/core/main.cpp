@@ -9,6 +9,7 @@
 
 int main(int argc, char *argv[])
 {
+    qRegisterMetaType<CopyResult>("CopyResult");
     QFont appFont;
     appFont.setFamily("Microsoft YaHei");
     appFont.setStyleStrategy(QFont::PreferAntialias);

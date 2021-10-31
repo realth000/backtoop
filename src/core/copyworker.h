@@ -10,19 +10,26 @@ class CopyWorker : public QObject
 public:
     explicit CopyWorker(QObject *parent = nullptr);
     void setTask(CopyTaskVector copyTaskVector);
+    void setReplaceFile(bool replaceFile);
+    void setCheckFileSum(bool checkFileSum);
+    void setResetDir(bool resetDir);
 
 public slots:
     void copyStart();
 
 signals:
     void copyFinished();
-    void copyOneFileSucceed(QString filePath = "");
-    void copyOneFileFailed(QString filePath = "");
+    void copyFileResult(QString filePath, CopyResult result);
 
 private:
     CopyTaskVector taskVector;
+    bool replaceFile = false;
+    bool checkFileSum = false;
+    bool resetDir = false;
 
     void copyWork(QString srcPath, QString dstPath);
+    void copyPostWork(QString srcPath, QString dstPath);
+    QString getFileSum(QString filePath) const;
 };
 
 #endif // COPYWORKER_H

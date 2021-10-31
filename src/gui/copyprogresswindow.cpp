@@ -24,18 +24,26 @@ void CopyProgressWindow::setFileCountTotal(quint64 count)
     updateFileCount(0);
 }
 
-void CopyProgressWindow::updateSuccessCount(QString filePath)
+void CopyProgressWindow::parseCopyResult(QString filePath, CopyResult result)
 {
-    fileCountCopied++;
-    updateFileCount(fileCountCopied);
-    ui->copyLogTextEdit->append(QString("Success: %1").arg(filePath));
-}
-
-void CopyProgressWindow::updateFailedCount(QString filePath)
-{
-    fileCountCopied++;
-    updateFileCount(fileCountCopied);
-    ui->copyLogTextEdit->append(QString("Failed: %1").arg(filePath));
+    switch (result) {
+    case CopyResult::Success:
+        updateSuccessCount(filePath);
+        break;
+    case CopyResult::Failed:
+        updateFailedCount(filePath);
+        break;
+    case CopyResult::AlreadyExists:
+        updateFailedCount(filePath);
+        log("文件已存在");
+        break;
+    case CopyResult::HashCheckFailed:
+        updateFailedCount(filePath);
+        log("校验失败，复制出错");
+        break;
+    default:
+        break;
+    }
 }
 
 void CopyProgressWindow::initUi()
@@ -61,8 +69,27 @@ void CopyProgressWindow::initUi()
     IconInstaller::installPushButtonIcon(ui->copyStopPushButton, ":/pic/no.png");
 }
 
+void CopyProgressWindow::log(QString msg)
+{
+    ui->copyLogTextEdit->append(msg);
+}
+
 void CopyProgressWindow::updateFileCount(quint64 alreadyCopiedCount)
 {
     ui->copyCountLabel->setText(QString("%1/%2").arg(alreadyCopiedCount).arg(fileCountTotal));
     ui->copyProgressBar->setValue(100*alreadyCopiedCount/fileCountTotal);
+}
+
+void CopyProgressWindow::updateSuccessCount(QString filePath)
+{
+    fileCountCopied++;
+    updateFileCount(fileCountCopied);
+    ui->copyLogTextEdit->append(QString("<font color=\"%2\">Success: %1</font>").arg(filePath, LOGTEXTEDIT_COPY_SUCCESS_COLOR));
+}
+
+void CopyProgressWindow::updateFailedCount(QString filePath)
+{
+    fileCountCopied++;
+    updateFileCount(fileCountCopied);
+    ui->copyLogTextEdit->append(QString("<font color=\"%2\">Failed: %1</font>").arg(filePath, LOGTEXTEDIT_COPY_FAILED_COLOR));
 }

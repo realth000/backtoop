@@ -11,6 +11,7 @@
 #include "iconinstaller.h"
 #include "copyprogresswindow.h"
 #include "core/copyworker.h"
+#include "messageboxexx.h"
 
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent)
@@ -250,12 +251,12 @@ void MainUi::getModelInfoFromIndex(ModelMode mode, QModelIndex modelIndex)
     if(infoWatchModel == nullptr){
         return;
     }
-    if(mode == ModelMode::SRC){
+    if(mode == ModelMode::Src){
         srcModelIndexList[keyString].contains(modelIndex) ? srcModelIndexList[keyString].removeAt(srcModelIndexList[keyString].indexOf(modelIndex))
                                                           : srcModelIndexList[keyString].append(modelIndex);
         getSrcModelInfoFromString(infoWatchModel->rootPath());
     }
-    else if(mode == ModelMode::DST){
+    else if(mode == ModelMode::Dst){
         dstModelIndexList[keyString].contains(modelIndex) ? dstModelIndexList[keyString].removeAt(dstModelIndexList[keyString].indexOf(modelIndex))
                                                           : dstModelIndexList[keyString].append(modelIndex);
         getDstModelInfoFromString(infoWatchModel->rootPath());
@@ -267,7 +268,7 @@ void MainUi::getSrcModelInfoFromIndex(QModelIndex modelIndex)
     if(!modelIndex.isValid()){
         return;
     }
-    getModelInfoFromIndex(ModelMode::SRC, modelIndex);
+    getModelInfoFromIndex(ModelMode::Src, modelIndex);
 }
 
 void MainUi::getDstModelInfoFromIndex(QModelIndex modelIndex)
@@ -275,7 +276,7 @@ void MainUi::getDstModelInfoFromIndex(QModelIndex modelIndex)
     if(!modelIndex.isValid()){
         return;
     }
-    getModelInfoFromIndex(ModelMode::DST, modelIndex);
+    getModelInfoFromIndex(ModelMode::Dst, modelIndex);
 }
 
 void MainUi::getModelInfoFromString(ModelMode mode, QString path)
@@ -284,7 +285,7 @@ void MainUi::getModelInfoFromString(ModelMode mode, QString path)
         return;
     }
     QString keyString=currentSrcPath + currentDstPath;
-    if(mode == ModelMode::SRC){
+    if(mode == ModelMode::Src){
         ui->srcDirTreeView->sortByColumn(0, Qt::AscendingOrder);
         int rowIndex = 0;
         QString displayName = "";
@@ -298,7 +299,7 @@ void MainUi::getModelInfoFromString(ModelMode mode, QString path)
         ui->srcDirHintLineEdit->setText("共" + QString::number(rowIndex) + "项");
         srcMapCountMap.insert(keyString, rowIndex);
     }
-    else if(mode == ModelMode::DST){
+    else if(mode == ModelMode::Dst){
         ui->dstDirTreeView->sortByColumn(0, Qt::AscendingOrder);
         int rowIndex = 0;
         QString displayName = "";
@@ -316,12 +317,12 @@ void MainUi::getModelInfoFromString(ModelMode mode, QString path)
 
 void MainUi::getSrcModelInfoFromString(QString srcPath)
 {
-    getModelInfoFromString(ModelMode::SRC, srcPath);
+    getModelInfoFromString(ModelMode::Src, srcPath);
 }
 
 void MainUi::getDstModelInfoFromString(QString dstPath)
 {
-    getModelInfoFromString(ModelMode::DST, dstPath);
+    getModelInfoFromString(ModelMode::Dst, dstPath);
 }
 
 void MainUi::on_backupPathsTableWidget_itemClicked(QTableWidgetItem *item)
@@ -526,14 +527,45 @@ void MainUi::on_startBackupButton_clicked()
     CopyWorker *copyWorker = new CopyWorker();
     copyWorker->moveToThread(copyThread);
     copyWorker->setTask(copyTaskVector);
+    copyWorker->setReplaceFile(replaceFile);
+    copyWorker->setCheckFileSum(checkFileSum);
+    copyWorker->setResetDir(resetDir);
     connect(copyThread, &QThread::started, copyWorker, &CopyWorker::copyStart);
     connect(copyWorker, &CopyWorker::copyFinished, copyThread, &QThread::quit);
     connect(copyThread, &QThread::finished, copyWorker, &CopyWorker::deleteLater);
     connect(copyThread, &QThread::finished, copyThread, &QThread::deleteLater);
 
-    connect(copyWorker, &CopyWorker::copyOneFileSucceed, copyWindow, &CopyProgressWindow::updateSuccessCount);
-    connect(copyWorker, &CopyWorker::copyOneFileFailed, copyWindow, &CopyProgressWindow::updateFailedCount);
+    connect(copyWorker, &CopyWorker::copyFileResult, copyWindow, &CopyProgressWindow::parseCopyResult);
 
     copyThread->start();
 }
 
+
+void MainUi::on_replaceFileCheckBox_stateChanged(int state)
+{
+    state != 0 ? replaceFile = true : replaceFile = false;
+}
+
+void MainUi::on_checkSumCheckBox_clicked()
+{
+    if(ui->checkSumCheckBox->isChecked()){
+        if(MessageBoxExY::Yes == MessageBoxExY::warning("校验文件", "将会在备份之后校验文件哈希值，可能会额外耗费更多磁盘读写及更多时间，是否确定？")){
+            checkFileSum = ui->checkSumCheckBox->isChecked();
+            return;
+        }
+        ui->checkSumCheckBox->setChecked(!ui->checkSumCheckBox->isChecked());
+        checkFileSum = ui->checkSumCheckBox->isChecked();
+    }
+}
+
+void MainUi::on_resetDirCheckBox_clicked()
+{
+    if(ui->resetDirCheckBox->isChecked()){
+        if(MessageBoxExY::Yes == MessageBoxExY::warning("清空文件夹", "将会在备份之前先清空备份文件夹，是否确定？")){
+            resetDir = ui->resetDirCheckBox->isChecked();
+            return;
+        }
+        ui->resetDirCheckBox->setChecked(!ui->resetDirCheckBox->isChecked());
+        resetDir = ui->resetDirCheckBox->isChecked();
+    }
+}

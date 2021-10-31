@@ -38,6 +38,7 @@ SOURCES += \
     src/core/main.cpp \
     src/gui/copyprogresswindow.cpp \
     src/gui/mainui.cpp \
+    src/utils/calchash.cpp \
     src/utils/iconinstaller.cpp \
     src/utils/qssinstaller.cpp \
     src/utils/style/proxystyle.cpp \
@@ -56,8 +57,9 @@ HEADERS += \
     src/include/qssinstaller.h \
     src/include/proxystyle.h \
     src/include/watchfilemodel.h \
+    src/include/calchash.h \
     src/utils/widget/lineeditex.h \
-    src/utils/widget/messageboxexx.h \
+    src/include/messageboxexx.h \
     src/utils/widget/tablewidgetex.h \
     src/utils/widget/titlebar.h
 

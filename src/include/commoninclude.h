@@ -81,7 +81,22 @@
 
 #define KEYMAP_JSON_ENGINE_VERSION "1.0"
 
+// CopyProgressWindow settings
+#define LOGTEXTEDIT_COPY_SUCCESS_COLOR "#f0ffff"
+#define LOGTEXTEDIT_COPY_FAILED_COLOR  "#cd1e2a"
+
 typedef QPair<QString, QString> CopyTask;
 typedef QVector<QPair<QString, QString>> CopyTaskVector;
+
+enum CopyResult{
+    // succeed
+    Success = 0,
+
+    // failed
+    Failed,
+    AlreadyExists,
+    HashCheckFailed,
+};
+
 
 #endif // COMMONINCLUDE_H

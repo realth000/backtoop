@@ -12,8 +12,8 @@
 #include "watchfilemodel.h"
 
 enum ModelMode{
-    SRC = 0,
-    DST
+    Src = 0,
+    Dst
 };
 
 QT_BEGIN_NAMESPACE
@@ -44,6 +44,11 @@ private:
 
     QString currentSrcPath;
     QString currentDstPath;
+
+    // config
+    bool replaceFile = false;
+    bool checkFileSum = false;
+    bool resetDir = false;
 
     // file model: watching source path and destination path
     WatchFileModel *srcPathWatchModel = nullptr;
@@ -81,5 +86,9 @@ private slots:
     void on_reverseSelectButton_clicked();
     void on_deletePathsTableButton_clicked();
     void on_startBackupButton_clicked();
+    void on_replaceFileCheckBox_stateChanged(int state);
+    void on_checkSumCheckBox_clicked();
+    void on_resetDirCheckBox_clicked();
+
 };
 #endif // MAINUI_H

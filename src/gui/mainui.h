@@ -30,7 +30,7 @@ public:
 
 public slots:
     void log(QString msg) const;
-
+    void insertBackupPath(QString name, QString srcPath, QString dstPath);
 
 private:
     Ui::MainUi *ui;
@@ -89,6 +89,6 @@ private slots:
     void on_replaceFileCheckBox_stateChanged(int state);
     void on_checkSumCheckBox_clicked();
     void on_resetDirCheckBox_clicked();
-
+    void on_openPathTableJsonButton_clicked();
 };
 #endif // MAINUI_H

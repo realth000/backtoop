@@ -12,6 +12,7 @@
 #include "copyprogresswindow.h"
 #include "core/copyworker.h"
 #include "messageboxexx.h"
+#include "inputbakpathwindow.h"
 
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent)
@@ -43,6 +44,12 @@ MainUi::~MainUi()
 void MainUi::log(QString msg) const
 {
     ui->logLineEdit->setText(msg);
+}
+
+void MainUi::insertBackupPath(QString name, QString srcPath, QString dstPath)
+{
+    qDebug() << "receive new backup path:" << name << srcPath << dstPath;
+    addBackupPath(name, "test Time", srcPath, dstPath);
 }
 
 
@@ -569,3 +576,12 @@ void MainUi::on_resetDirCheckBox_clicked()
         resetDir = ui->resetDirCheckBox->isChecked();
     }
 }
+
+void MainUi::on_openPathTableJsonButton_clicked()
+{
+    InputBakPathWindow *w = new InputBakPathWindow();
+    w->setAttribute(Qt::WA_DeleteOnClose);
+    connect(w, &InputBakPathWindow::sendNewPath, this, &MainUi::insertBackupPath);
+    w->show();
+}
+

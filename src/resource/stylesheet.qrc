@@ -3,5 +3,6 @@
         <file>stylesheet/stylesheet.css</file>
         <file>stylesheet/stylesheet_messageboxexx.css</file>
         <file>stylesheet/stylesheet_copyprogresswindow.css</file>
+        <file>stylesheet/stylesheet_inputbakpathwindow.css</file>
     </qresource>
 </RCC>

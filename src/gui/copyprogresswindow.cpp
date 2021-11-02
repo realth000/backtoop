@@ -58,7 +58,7 @@ void CopyProgressWindow::initUi()
     // Title bar style
     ui->titleBar->setFixedWidth(this->width());
     ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
-    ui->titleBar->setTitleText(TITLEBAR_TITLETEXT);
+    ui->titleBar->setTitleText("备份中");
     ui->titleBar->setUseGradient(true);
     ui->titleBar->initUi(TitleBar::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
                          "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(18,18,18), stop: 1 rgb(21,21,21))", "rgb(240,255,255)");

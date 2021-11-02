@@ -24,6 +24,8 @@ public slots:
 private:
     Ui::CopyProgressWindow *ui;
     PushButtonStyle *pushButtonStyle = nullptr;
+    HorizontalScrollBarStyle *hScrollBarStyle = nullptr;
+    VerticalScrollBarStyle *vScrollBarStyle = nullptr;
     quint64 fileCountCopied = 0;
     quint64 fileCountTotal;
 

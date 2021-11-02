@@ -44,11 +44,13 @@ private:
 
     QString currentSrcPath;
     QString currentDstPath;
+    QString appPath;
 
     // config
     bool replaceFile = false;
     bool checkFileSum = false;
     bool resetDir = false;
+    int copyContentType = 0;
 
     // file model: watching source path and destination path
     WatchFileModel *srcPathWatchModel = nullptr;
@@ -66,7 +68,10 @@ private:
     QStandardItemModel *dirViewHeaderModel = nullptr;
 
     void initUi();
+    void initDefaultConfig();
     void initConfig();
+    void loadConfig();
+    void saveConfig();
     QWidget* addCheckBox();
     void addBackupPath(QString name, QString time, QString srcPath, QString dstPath);
     void deleteSelectedPath();
@@ -90,5 +95,8 @@ private slots:
     void on_checkSumCheckBox_clicked();
     void on_resetDirCheckBox_clicked();
     void on_openPathTableJsonButton_clicked();
+    void on_savePathTableButton_clicked();
+    void on_cpContentRadioButton_clicked();
+    void on_cpDirRadioButton_clicked();
 };
 #endif // MAINUI_H

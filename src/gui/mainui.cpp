@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QScrollBar>
 #include <QThread>
+#include <QSettings>
 #include "commoninclude.h"
 #include "qssinstaller.h"
 #include "iconinstaller.h"
@@ -19,8 +20,8 @@ MainUi::MainUi(QWidget *parent)
     , ui(new Ui::MainUi)
 {
     ui->setupUi(this);
-    initUi();
     initConfig();
+    initUi();
 }
 
 MainUi::~MainUi()
@@ -156,12 +157,66 @@ void MainUi::initUi()
     ui->checkSumCheckBox->setStyle(checkBoxStyle);
     ui->resetDirCheckBox->setStyle(checkBoxStyle);
 
+    // apply config
+    ui->replaceFileCheckBox->setChecked(replaceFile);
+    ui->checkSumCheckBox->setChecked(checkFileSum);
+    ui->resetDirCheckBox->setChecked(resetDir);
+
+    switch (copyContentType) {
+    case 1:
+        ui->cpContentRadioButton->setChecked(true);
+        break;
+    case 0:
+    default:
+        ui->cpContentRadioButton->setChecked(true);
+        break;
+    }
+
     log("启动");
+
+    // for test
+    addBackupPath("test", "test Time", "C:/QtProjects/0/test", "D:/Storage/3");
+}
+
+void MainUi::initDefaultConfig()
+{
+    ui->replaceFileCheckBox->setChecked(false);
+    ui->checkSumCheckBox->setChecked(false);
+    ui->resetDirCheckBox->setChecked(false);
 }
 
 void MainUi::initConfig()
 {
-    addBackupPath("test", "test Time", "C:/QtProjects/0/test", "D:/Storage/3");
+    appPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
+    loadConfig();
+}
+
+void MainUi::loadConfig()
+{
+    QString configFilePath(QDir::toNativeSeparators(appPath + "/" +APP_CONFIG_FILE_NAME));
+    if(!QFileInfo::exists(configFilePath)){
+        MessageBoxExY::information("未找到配置文件", "未找到配置文件，加载默认配置");
+        initDefaultConfig();
+        return;
+    }
+    QSettings *ini = new QSettings(configFilePath, QSettings::IniFormat);
+    replaceFile = ini->value(CONFIG_REPLACEFILE_NAME).toBool();
+    checkFileSum = ini->value(CONFIG_CHECKFILESUM_NAME).toBool();
+    qDebug() << "checkFileSum" << checkFileSum;
+    resetDir = ini->value(CONFIG_RESETDIR_NAME).toBool();
+    copyContentType = ini->value(CONFIG_COPYCONTENTTYPE_NAME).toInt();
+    delete ini;
+}
+
+void MainUi::saveConfig()
+{
+    QString configFilePath(QDir::toNativeSeparators(appPath + "/" +APP_CONFIG_FILE_NAME));
+    QSettings *ini = new QSettings(configFilePath, QSettings::IniFormat);
+    ini->setValue(CONFIG_REPLACEFILE_NAME, replaceFile);
+    ini->setValue(CONFIG_CHECKFILESUM_NAME, checkFileSum);
+    ini->setValue(CONFIG_RESETDIR_NAME, resetDir);
+    ini->setValue(CONFIG_COPYCONTENTTYPE_NAME, copyContentType);
+    delete ini;
 }
 
 // add checkbox in tablewidget to select
@@ -561,8 +616,8 @@ void MainUi::on_checkSumCheckBox_clicked()
             return;
         }
         ui->checkSumCheckBox->setChecked(!ui->checkSumCheckBox->isChecked());
-        checkFileSum = ui->checkSumCheckBox->isChecked();
     }
+    checkFileSum = ui->checkSumCheckBox->isChecked();
 }
 
 void MainUi::on_resetDirCheckBox_clicked()
@@ -573,8 +628,8 @@ void MainUi::on_resetDirCheckBox_clicked()
             return;
         }
         ui->resetDirCheckBox->setChecked(!ui->resetDirCheckBox->isChecked());
-        resetDir = ui->resetDirCheckBox->isChecked();
     }
+    resetDir = ui->resetDirCheckBox->isChecked();
 }
 
 void MainUi::on_openPathTableJsonButton_clicked()
@@ -583,5 +638,23 @@ void MainUi::on_openPathTableJsonButton_clicked()
     w->setAttribute(Qt::WA_DeleteOnClose);
     connect(w, &InputBakPathWindow::sendNewPath, this, &MainUi::insertBackupPath);
     w->show();
+}
+
+
+void MainUi::on_savePathTableButton_clicked()
+{
+    saveConfig();
+}
+
+
+void MainUi::on_cpContentRadioButton_clicked()
+{
+    copyContentType = 0;
+}
+
+
+void MainUi::on_cpDirRadioButton_clicked()
+{
+    copyContentType = 1;
 }
 

@@ -33,6 +33,7 @@ win32-msvc* {
 }
 
 SOURCES += \
+    src/gui/inputbakpathwindow.cpp \
     src/core/commoninclude.cpp \
     src/core/copyworker.cpp \
     src/core/main.cpp \
@@ -49,6 +50,7 @@ SOURCES += \
     src/utils/widget/titlebar.cpp
 
 HEADERS += \
+    src/gui/inputbakpathwindow.h \
     src/core/copyworker.h \
     src/gui/copyprogresswindow.h \
     src/include/commoninclude.h \
@@ -64,6 +66,7 @@ HEADERS += \
     src/utils/widget/titlebar.h
 
 FORMS += \
+    src/gui/inputbakpathwindow.ui \
     src/gui/copyprogresswindow.ui \
     src/gui/mainui.ui \
     src/utils/widget/messageboxexx.ui

@@ -85,6 +85,12 @@
 #define LOGTEXTEDIT_COPY_SUCCESS_COLOR "#f0ffff"
 #define LOGTEXTEDIT_COPY_FAILED_COLOR  "#cd1e2a"
 
+#define APP_CONFIG_FILE_NAME "config.ini"
+#define CONFIG_REPLACEFILE_NAME "/Copy/ReplaceFile"
+#define CONFIG_CHECKFILESUM_NAME "/Copy/CheckFileSum"
+#define CONFIG_RESETDIR_NAME "/Copy/ResetDir"
+#define CONFIG_COPYCONTENTTYPE_NAME "/Copy/CopyContentType"
+
 typedef QPair<QString, QString> CopyTask;
 typedef QVector<QPair<QString, QString>> CopyTaskVector;
 

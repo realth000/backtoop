@@ -70,7 +70,7 @@ void CopyWorker::copyWork(QString srcPath, QString dstPath)
                         continue;
                     }
                 }
-                emit copyFileResult(srcPath, CopyResult::AlreadyExists);
+                emit copyFileResult(info.absoluteFilePath(), CopyResult::AlreadyExists);
                 continue;
             }
         }

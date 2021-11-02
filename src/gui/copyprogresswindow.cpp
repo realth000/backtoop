@@ -1,5 +1,6 @@
 ﻿#include "copyprogresswindow.h"
 #include "ui_copyprogresswindow.h"
+#include <QScrollBar>
 #include "qssinstaller.h"
 #include "commoninclude.h"
 #include "iconinstaller.h"
@@ -16,6 +17,8 @@ CopyProgressWindow::~CopyProgressWindow()
 {
     delete ui;
     delete pushButtonStyle;
+    delete hScrollBarStyle;
+    delete vScrollBarStyle;
 }
 
 void CopyProgressWindow::setFileCountTotal(quint64 count)
@@ -35,11 +38,11 @@ void CopyProgressWindow::parseCopyResult(QString filePath, CopyResult result)
         break;
     case CopyResult::AlreadyExists:
         updateFailedCount(filePath);
-        log("文件已存在");
+        log(QString("<font color=\"%1\">文件已存在</font>").arg(LOGTEXTEDIT_COPY_FAILED_COLOR));
         break;
     case CopyResult::HashCheckFailed:
         updateFailedCount(filePath);
-        log("校验失败，复制出错");
+        log(QString("<font color=\"%1\">文件校验未通过</font>").arg(LOGTEXTEDIT_COPY_FAILED_COLOR));
         break;
     default:
         break;
@@ -49,6 +52,8 @@ void CopyProgressWindow::parseCopyResult(QString filePath, CopyResult result)
 void CopyProgressWindow::initUi()
 {
     pushButtonStyle = new PushButtonStyle();
+    hScrollBarStyle = new HorizontalScrollBarStyle();
+    vScrollBarStyle = new VerticalScrollBarStyle();
     this->setWindowModality(Qt::ApplicationModal);
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setStyleSheet(QssInstaller::QssInstallFromFile(":/stylesheet/stylesheet_copyprogresswindow.css").arg(this->objectName(), "rgb(55,85,100)",
@@ -67,6 +72,9 @@ void CopyProgressWindow::initUi()
     ui->copyLogTextEdit->setReadOnly(true);
     ui->copyStopPushButton->setStyle(pushButtonStyle);
     IconInstaller::installPushButtonIcon(ui->copyStopPushButton, ":/pic/no.png");
+
+    ui->copyLogTextEdit->horizontalScrollBar()->setStyle(hScrollBarStyle);
+    ui->copyLogTextEdit->verticalScrollBar()->setStyle(vScrollBarStyle);
 }
 
 void CopyProgressWindow::log(QString msg)

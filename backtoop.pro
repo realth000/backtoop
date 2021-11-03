@@ -33,6 +33,7 @@ win32-msvc* {
 }
 
 SOURCES += \
+    src/core/jsonparser.cpp \
     src/gui/inputbakpathwindow.cpp \
     src/core/commoninclude.cpp \
     src/core/copyworker.cpp \
@@ -50,6 +51,7 @@ SOURCES += \
     src/utils/widget/titlebar.cpp
 
 HEADERS += \
+    src/core/jsonparser.h \
     src/gui/inputbakpathwindow.h \
     src/core/copyworker.h \
     src/gui/copyprogresswindow.h \

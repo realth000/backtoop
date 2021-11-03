@@ -14,6 +14,7 @@
 #include "core/copyworker.h"
 #include "messageboxexx.h"
 #include "inputbakpathwindow.h"
+#include "core/jsonparser.h"
 
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent)
@@ -22,6 +23,7 @@ MainUi::MainUi(QWidget *parent)
     ui->setupUi(this);
     initConfig();
     initUi();
+    loadData();
 }
 
 MainUi::~MainUi()
@@ -32,7 +34,8 @@ MainUi::~MainUi()
     delete checkBoxStyle;
     delete vScrollBarStyle;
     delete hScrollBarStyle;
-    delete pushbuttonStyle;
+    delete pushButtonStyle;
+    delete radioButtonStyle;
 
     //delete view
     delete dirViewHeaderModel;
@@ -60,7 +63,8 @@ void MainUi::initUi()
     checkBoxStyle = new CheckBoxStyle;
     vScrollBarStyle = new VerticalScrollBarStyle;
     hScrollBarStyle = new HorizontalScrollBarStyle;
-    pushbuttonStyle = new PushButtonStyle;
+    pushButtonStyle = new PushButtonStyle;
+    radioButtonStyle = new RadioButtonStyle;
 
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setFixedSize(this->width(), this->height());
@@ -144,18 +148,21 @@ void MainUi::initUi()
     IconInstaller::installPushButtonIcon(ui->reverseSelectButton, ":/pic/false.png");
     IconInstaller::installPushButtonIcon(ui->deletePathsTableButton, ":/pic/delete.png");
     IconInstaller::installPushButtonIcon(ui->startBackupButton, ":/pic/run.png");
-    ui->openPathTableJsonButton->setStyle(pushbuttonStyle);
-    ui->refreshPathTableButton->setStyle(pushbuttonStyle);
-    ui->savePathTableButton->setStyle(pushbuttonStyle);
-    ui->allSelectButton->setStyle(pushbuttonStyle);
-    ui->reverseSelectButton->setStyle(pushbuttonStyle);
-    ui->deletePathsTableButton->setStyle(pushbuttonStyle);
-    ui->startBackupButton->setStyle(pushbuttonStyle);
+    ui->openPathTableJsonButton->setStyle(pushButtonStyle);
+    ui->refreshPathTableButton->setStyle(pushButtonStyle);
+    ui->savePathTableButton->setStyle(pushButtonStyle);
+    ui->allSelectButton->setStyle(pushButtonStyle);
+    ui->reverseSelectButton->setStyle(pushButtonStyle);
+    ui->deletePathsTableButton->setStyle(pushButtonStyle);
+    ui->startBackupButton->setStyle(pushButtonStyle);
 
     // init checkbox
     ui->replaceFileCheckBox->setStyle(checkBoxStyle);
     ui->checkSumCheckBox->setStyle(checkBoxStyle);
     ui->resetDirCheckBox->setStyle(checkBoxStyle);
+
+    ui->cpContentRadioButton->setStyle(radioButtonStyle);
+    ui->cpDirRadioButton->setStyle(radioButtonStyle);
 
     // apply config
     ui->replaceFileCheckBox->setChecked(replaceFile);
@@ -173,9 +180,6 @@ void MainUi::initUi()
     }
 
     log("启动");
-
-    // for test
-    addBackupPath("test", "test Time", "C:/QtProjects/0/test", "D:/Storage/3");
 }
 
 void MainUi::initDefaultConfig()
@@ -188,6 +192,7 @@ void MainUi::initDefaultConfig()
 void MainUi::initConfig()
 {
     appPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
+    dataFilePath = QDir::toNativeSeparators(appPath + "/" +APP_DATA_FILE_NAME);
     loadConfig();
 }
 
@@ -202,7 +207,6 @@ void MainUi::loadConfig()
     QSettings *ini = new QSettings(configFilePath, QSettings::IniFormat);
     replaceFile = ini->value(CONFIG_REPLACEFILE_NAME).toBool();
     checkFileSum = ini->value(CONFIG_CHECKFILESUM_NAME).toBool();
-    qDebug() << "checkFileSum" << checkFileSum;
     resetDir = ini->value(CONFIG_RESETDIR_NAME).toBool();
     copyContentType = ini->value(CONFIG_COPYCONTENTTYPE_NAME).toInt();
     delete ini;
@@ -217,6 +221,35 @@ void MainUi::saveConfig()
     ini->setValue(CONFIG_RESETDIR_NAME, resetDir);
     ini->setValue(CONFIG_COPYCONTENTTYPE_NAME, copyContentType);
     delete ini;
+}
+
+void MainUi::loadData()
+{
+    if(!QFileInfo::exists(dataFilePath)){
+        qDebug() << "data file not exists";
+        return;
+    }
+    BackupPathDatas datas = JsonParser::loadBackupPathDataFromFile(dataFilePath);
+    foreach(BackupPathData data, datas){
+        addBackupPath(data.name, data.lastModifyTime, data.srcPath, data.dstPath);
+    }
+
+}
+
+void MainUi::saveData()
+{
+    BackupPathDatas allData;
+    for(int pos = 0; pos < ui->backupPathsTableWidget->rowCount(); pos++){
+        BackupPathData data;
+        data.id = QString::number(pos);
+        data.name = ui->backupPathsTableWidget->item(pos, 1)->text();
+        data.lastModifyTime = ui->backupPathsTableWidget->item(pos, 2)->text();
+        data.srcPath = ui->backupPathsTableWidget->item(pos, 3)->text();
+        data.dstPath = ui->backupPathsTableWidget->item(pos, 4)->text();
+        allData.append(data);
+    }
+    bool saveResult = JsonParser::saveBackupPathDataToFile(dataFilePath, allData);
+    saveResult ? log("保存完成") : log("保存失败");
 }
 
 // add checkbox in tablewidget to select
@@ -255,7 +288,36 @@ void MainUi::addBackupPath(QString name, QString time, QString srcPath, QString 
 
 void MainUi::deleteSelectedPath()
 {
-
+    if(bakChbCheckedCount <= 0){
+        return;
+    }
+    QString keyString;
+    for(int tableRowPos = 0; tableRowPos < ui->backupPathsTableWidget->rowCount();){
+        if(bakPathChbList[tableRowPos]->isChecked()){
+            keyString = ui->backupPathsTableWidget->item(tableRowPos, 1)->text();
+            delete bakPathChbList[tableRowPos];
+            bakPathChbList.removeAt(tableRowPos);
+            delete srcPathWatchModelMap.value(keyString);
+            delete dstPathWatchModelMap.value(keyString);
+            srcPathWatchModelMap.remove(keyString);
+            dstPathWatchModelMap.remove(keyString);
+            srcModelIndexList.remove(keyString);
+            dstModelIndexList.remove(keyString);
+            srcMapCountMap.remove(keyString);
+            dstMapCountMap.remove(keyString);
+            ui->backupPathsTableWidget->removeRow(tableRowPos);
+            bakChbCheckedCount--;
+            if(bakChbCheckedCount <= 0){
+                break;
+            }
+            qDebug() << "delete at pos" << tableRowPos;
+        }
+        else{
+            tableRowPos++;
+        }
+        qDebug() << "123";
+    }
+    bakChbCheckedCount = 0;
 }
 
 // 这是计算备份路径文件夹下的文件数目（不包括文件夹）的函数
@@ -527,36 +589,7 @@ void MainUi::on_reverseSelectButton_clicked()
 
 void MainUi::on_deletePathsTableButton_clicked()
 {
-    if(bakChbCheckedCount <= 0){
-        return;
-    }
-    QString keyString;
-    for(int tableRowPos = 0; tableRowPos < ui->backupPathsTableWidget->rowCount();){
-        if(bakPathChbList[tableRowPos]->isChecked()){
-            keyString = ui->backupPathsTableWidget->item(tableRowPos, 1)->text();
-            delete bakPathChbList[tableRowPos];
-            bakPathChbList.removeAt(tableRowPos);
-            delete srcPathWatchModelMap.value(keyString);
-            delete dstPathWatchModelMap.value(keyString);
-            srcPathWatchModelMap.remove(keyString);
-            dstPathWatchModelMap.remove(keyString);
-            srcModelIndexList.remove(keyString);
-            dstModelIndexList.remove(keyString);
-            srcMapCountMap.remove(keyString);
-            dstMapCountMap.remove(keyString);
-            ui->backupPathsTableWidget->removeRow(tableRowPos);
-            bakChbCheckedCount--;
-            if(bakChbCheckedCount <= 0){
-                break;
-            }
-            qDebug() << "delete at pos" << tableRowPos;
-        }
-        else{
-            tableRowPos++;
-        }
-        qDebug() << "123";
-    }
-    bakChbCheckedCount = 0;
+    deleteSelectedPath();
 }
 
 void MainUi::on_startBackupButton_clicked()
@@ -644,6 +677,7 @@ void MainUi::on_openPathTableJsonButton_clicked()
 void MainUi::on_savePathTableButton_clicked()
 {
     saveConfig();
+    saveData();
 }
 
 

@@ -2,8 +2,9 @@
 #define COMMONINCLUDE_H
 
 #include <QDateTime>
-#include <QMap>
+#include <QVector>
 #include <QString>
+#include <QPair>
 
 #define TO_STR1(I1) #I1
 #define TO_STR2(I2) TO_STR1(I2)
@@ -78,9 +79,50 @@
 #define BACKUPPATH_ITEM_EXIST_TEXT_COLOR "#f0ffff"
 #define BACKUPPATH_ITEM_NOT_EXIST_TEXT_COLOR "#cd1e2a"
 
-#define KEYMAP_JSON_ENGINE_VERSION "1.0"
+#define BACKUPPATH_JSON_ENGINE_VERSION "1.0"
+
+// CopyProgressWindow settings
+#define LOGTEXTEDIT_COPY_SUCCESS_COLOR "#f0ffff"
+#define LOGTEXTEDIT_COPY_FAILED_COLOR  "#cd1e2a"
+
+#define APP_CONFIG_FILE_NAME "config.ini"
+#define APP_DATA_FILE_NAME "data.json"
+#define CONFIG_REPLACEFILE_NAME "/Copy/ReplaceFile"
+#define CONFIG_CHECKFILESUM_NAME "/Copy/CheckFileSum"
+#define CONFIG_RESETDIR_NAME "/Copy/ResetDir"
+#define CONFIG_COPYCONTENTTYPE_NAME "/Copy/CopyContentType"
 
 typedef QPair<QString, QString> CopyTask;
 typedef QVector<QPair<QString, QString>> CopyTaskVector;
+
+enum CopyResult{
+    // succeed
+    Success = 0,
+
+    // failed
+    Failed,
+    AlreadyExists,
+    HashCheckFailed,
+};
+
+// backup path table structure
+struct BackupPathData{
+    QString id;
+    QString name;
+    QString lastModifyTime;
+    QString srcPath;
+    QString dstPath;
+};
+
+typedef  QVector<BackupPathData> BackupPathDatas;
+
+// backup path data json defines
+#define DATA_JSON_ENGINEVERSION_NAME "backuppath_json_engine_version"
+#define DATA_JSON_TIME_NAME "time"
+#define DATA_JSON_DATACOUNT_NAME "data_count"
+#define DATA_JSON_NAME_NAME "name"
+#define DATA_JSON_LASTMODTIME_NAME "last_modify_time"
+#define DATA_JSON_SRCPATH_TIME "source_path"
+#define DATA_JSON_DSTPATH_TIME "destination_path"
 
 #endif // COMMONINCLUDE_H

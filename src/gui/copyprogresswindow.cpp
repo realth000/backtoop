@@ -1,5 +1,6 @@
 ﻿#include "copyprogresswindow.h"
 #include "ui_copyprogresswindow.h"
+#include <QScrollBar>
 #include "qssinstaller.h"
 #include "commoninclude.h"
 #include "iconinstaller.h"
@@ -16,6 +17,8 @@ CopyProgressWindow::~CopyProgressWindow()
 {
     delete ui;
     delete pushButtonStyle;
+    delete hScrollBarStyle;
+    delete vScrollBarStyle;
 }
 
 void CopyProgressWindow::setFileCountTotal(quint64 count)
@@ -24,23 +27,33 @@ void CopyProgressWindow::setFileCountTotal(quint64 count)
     updateFileCount(0);
 }
 
-void CopyProgressWindow::updateSuccessCount(QString filePath)
+void CopyProgressWindow::parseCopyResult(QString filePath, CopyResult result)
 {
-    fileCountCopied++;
-    updateFileCount(fileCountCopied);
-    ui->copyLogTextEdit->append(QString("Success: %1").arg(filePath));
-}
-
-void CopyProgressWindow::updateFailedCount(QString filePath)
-{
-    fileCountCopied++;
-    updateFileCount(fileCountCopied);
-    ui->copyLogTextEdit->append(QString("Failed: %1").arg(filePath));
+    switch (result) {
+    case CopyResult::Success:
+        updateSuccessCount(filePath);
+        break;
+    case CopyResult::Failed:
+        updateFailedCount(filePath);
+        break;
+    case CopyResult::AlreadyExists:
+        updateFailedCount(filePath);
+        log(QString("<font color=\"%1\">文件已存在</font>").arg(LOGTEXTEDIT_COPY_FAILED_COLOR));
+        break;
+    case CopyResult::HashCheckFailed:
+        updateFailedCount(filePath);
+        log(QString("<font color=\"%1\">文件校验未通过</font>").arg(LOGTEXTEDIT_COPY_FAILED_COLOR));
+        break;
+    default:
+        break;
+    }
 }
 
 void CopyProgressWindow::initUi()
 {
     pushButtonStyle = new PushButtonStyle();
+    hScrollBarStyle = new HorizontalScrollBarStyle();
+    vScrollBarStyle = new VerticalScrollBarStyle();
     this->setWindowModality(Qt::ApplicationModal);
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setStyleSheet(QssInstaller::QssInstallFromFile(":/stylesheet/stylesheet_copyprogresswindow.css").arg(this->objectName(), "rgb(55,85,100)",
@@ -50,7 +63,7 @@ void CopyProgressWindow::initUi()
     // Title bar style
     ui->titleBar->setFixedWidth(this->width());
     ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
-    ui->titleBar->setTitleText(TITLEBAR_TITLETEXT);
+    ui->titleBar->setTitleText("备份中");
     ui->titleBar->setUseGradient(true);
     ui->titleBar->initUi(TitleBar::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
                          "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(18,18,18), stop: 1 rgb(21,21,21))", "rgb(240,255,255)");
@@ -59,10 +72,32 @@ void CopyProgressWindow::initUi()
     ui->copyLogTextEdit->setReadOnly(true);
     ui->copyStopPushButton->setStyle(pushButtonStyle);
     IconInstaller::installPushButtonIcon(ui->copyStopPushButton, ":/pic/no.png");
+
+    ui->copyLogTextEdit->horizontalScrollBar()->setStyle(hScrollBarStyle);
+    ui->copyLogTextEdit->verticalScrollBar()->setStyle(vScrollBarStyle);
+}
+
+void CopyProgressWindow::log(QString msg)
+{
+    ui->copyLogTextEdit->append(msg);
 }
 
 void CopyProgressWindow::updateFileCount(quint64 alreadyCopiedCount)
 {
     ui->copyCountLabel->setText(QString("%1/%2").arg(alreadyCopiedCount).arg(fileCountTotal));
     ui->copyProgressBar->setValue(100*alreadyCopiedCount/fileCountTotal);
+}
+
+void CopyProgressWindow::updateSuccessCount(QString filePath)
+{
+    fileCountCopied++;
+    updateFileCount(fileCountCopied);
+    ui->copyLogTextEdit->append(QString("<font color=\"%2\">Success: %1</font>").arg(filePath, LOGTEXTEDIT_COPY_SUCCESS_COLOR));
+}
+
+void CopyProgressWindow::updateFailedCount(QString filePath)
+{
+    fileCountCopied++;
+    updateFileCount(fileCountCopied);
+    ui->copyLogTextEdit->append(QString("<font color=\"%2\">Failed: %1</font>").arg(filePath, LOGTEXTEDIT_COPY_FAILED_COLOR));
 }

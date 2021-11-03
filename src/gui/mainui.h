@@ -12,8 +12,8 @@
 #include "watchfilemodel.h"
 
 enum ModelMode{
-    SRC = 0,
-    DST
+    Src = 0,
+    Dst
 };
 
 QT_BEGIN_NAMESPACE
@@ -30,7 +30,7 @@ public:
 
 public slots:
     void log(QString msg) const;
-
+    void insertBackupPath(QString name, QString srcPath, QString dstPath);
 
 private:
     Ui::MainUi *ui;
@@ -40,10 +40,19 @@ private:
     CheckBoxStyle *checkBoxStyle = nullptr;
     VerticalScrollBarStyle *vScrollBarStyle = nullptr;
     HorizontalScrollBarStyle *hScrollBarStyle = nullptr;
-    PushButtonStyle *pushbuttonStyle = nullptr;
+    PushButtonStyle *pushButtonStyle = nullptr;
+    RadioButtonStyle *radioButtonStyle = nullptr;
 
     QString currentSrcPath;
     QString currentDstPath;
+    QString appPath;
+    QString dataFilePath;
+
+    // config
+    bool replaceFile = false;
+    bool checkFileSum = false;
+    bool resetDir = false;
+    int copyContentType = 0;
 
     // file model: watching source path and destination path
     WatchFileModel *srcPathWatchModel = nullptr;
@@ -61,7 +70,12 @@ private:
     QStandardItemModel *dirViewHeaderModel = nullptr;
 
     void initUi();
+    void initDefaultConfig();
     void initConfig();
+    void loadConfig();
+    void saveConfig();
+    void loadData();
+    void saveData();
     QWidget* addCheckBox();
     void addBackupPath(QString name, QString time, QString srcPath, QString dstPath);
     void deleteSelectedPath();
@@ -81,5 +95,12 @@ private slots:
     void on_reverseSelectButton_clicked();
     void on_deletePathsTableButton_clicked();
     void on_startBackupButton_clicked();
+    void on_replaceFileCheckBox_stateChanged(int state);
+    void on_checkSumCheckBox_clicked();
+    void on_resetDirCheckBox_clicked();
+    void on_openPathTableJsonButton_clicked();
+    void on_savePathTableButton_clicked();
+    void on_cpContentRadioButton_clicked();
+    void on_cpDirRadioButton_clicked();
 };
 #endif // MAINUI_H

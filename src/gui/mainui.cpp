@@ -6,19 +6,24 @@
 #include <QDebug>
 #include <QScrollBar>
 #include <QThread>
+#include <QSettings>
 #include "commoninclude.h"
 #include "qssinstaller.h"
 #include "iconinstaller.h"
 #include "copyprogresswindow.h"
 #include "core/copyworker.h"
+#include "messageboxexx.h"
+#include "inputbakpathwindow.h"
+#include "core/jsonparser.h"
 
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::MainUi)
 {
     ui->setupUi(this);
-    initUi();
     initConfig();
+    initUi();
+    loadData();
 }
 
 MainUi::~MainUi()
@@ -29,7 +34,8 @@ MainUi::~MainUi()
     delete checkBoxStyle;
     delete vScrollBarStyle;
     delete hScrollBarStyle;
-    delete pushbuttonStyle;
+    delete pushButtonStyle;
+    delete radioButtonStyle;
 
     //delete view
     delete dirViewHeaderModel;
@@ -44,6 +50,12 @@ void MainUi::log(QString msg) const
     ui->logLineEdit->setText(msg);
 }
 
+void MainUi::insertBackupPath(QString name, QString srcPath, QString dstPath)
+{
+    qDebug() << "receive new backup path:" << name << srcPath << dstPath;
+    addBackupPath(name, "test Time", srcPath, dstPath);
+}
+
 
 void MainUi::initUi()
 {
@@ -51,7 +63,8 @@ void MainUi::initUi()
     checkBoxStyle = new CheckBoxStyle;
     vScrollBarStyle = new VerticalScrollBarStyle;
     hScrollBarStyle = new HorizontalScrollBarStyle;
-    pushbuttonStyle = new PushButtonStyle;
+    pushButtonStyle = new PushButtonStyle;
+    radioButtonStyle = new RadioButtonStyle;
 
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setFixedSize(this->width(), this->height());
@@ -135,25 +148,108 @@ void MainUi::initUi()
     IconInstaller::installPushButtonIcon(ui->reverseSelectButton, ":/pic/false.png");
     IconInstaller::installPushButtonIcon(ui->deletePathsTableButton, ":/pic/delete.png");
     IconInstaller::installPushButtonIcon(ui->startBackupButton, ":/pic/run.png");
-    ui->openPathTableJsonButton->setStyle(pushbuttonStyle);
-    ui->refreshPathTableButton->setStyle(pushbuttonStyle);
-    ui->savePathTableButton->setStyle(pushbuttonStyle);
-    ui->allSelectButton->setStyle(pushbuttonStyle);
-    ui->reverseSelectButton->setStyle(pushbuttonStyle);
-    ui->deletePathsTableButton->setStyle(pushbuttonStyle);
-    ui->startBackupButton->setStyle(pushbuttonStyle);
+    ui->openPathTableJsonButton->setStyle(pushButtonStyle);
+    ui->refreshPathTableButton->setStyle(pushButtonStyle);
+    ui->savePathTableButton->setStyle(pushButtonStyle);
+    ui->allSelectButton->setStyle(pushButtonStyle);
+    ui->reverseSelectButton->setStyle(pushButtonStyle);
+    ui->deletePathsTableButton->setStyle(pushButtonStyle);
+    ui->startBackupButton->setStyle(pushButtonStyle);
 
     // init checkbox
     ui->replaceFileCheckBox->setStyle(checkBoxStyle);
     ui->checkSumCheckBox->setStyle(checkBoxStyle);
     ui->resetDirCheckBox->setStyle(checkBoxStyle);
 
+    ui->cpContentRadioButton->setStyle(radioButtonStyle);
+    ui->cpDirRadioButton->setStyle(radioButtonStyle);
+
+    // apply config
+    ui->replaceFileCheckBox->setChecked(replaceFile);
+    ui->checkSumCheckBox->setChecked(checkFileSum);
+    ui->resetDirCheckBox->setChecked(resetDir);
+
+    switch (copyContentType) {
+    case 1:
+        ui->cpContentRadioButton->setChecked(true);
+        break;
+    case 0:
+    default:
+        ui->cpContentRadioButton->setChecked(true);
+        break;
+    }
+
     log("启动");
+}
+
+void MainUi::initDefaultConfig()
+{
+    ui->replaceFileCheckBox->setChecked(false);
+    ui->checkSumCheckBox->setChecked(false);
+    ui->resetDirCheckBox->setChecked(false);
 }
 
 void MainUi::initConfig()
 {
-    addBackupPath("test", "test Time", "C:/QtProjects/0/test", "D:/Storage/3");
+    appPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
+    dataFilePath = QDir::toNativeSeparators(appPath + "/" +APP_DATA_FILE_NAME);
+    loadConfig();
+}
+
+void MainUi::loadConfig()
+{
+    QString configFilePath(QDir::toNativeSeparators(appPath + "/" +APP_CONFIG_FILE_NAME));
+    if(!QFileInfo::exists(configFilePath)){
+        MessageBoxExY::information("未找到配置文件", "未找到配置文件，加载默认配置");
+        initDefaultConfig();
+        return;
+    }
+    QSettings *ini = new QSettings(configFilePath, QSettings::IniFormat);
+    replaceFile = ini->value(CONFIG_REPLACEFILE_NAME).toBool();
+    checkFileSum = ini->value(CONFIG_CHECKFILESUM_NAME).toBool();
+    resetDir = ini->value(CONFIG_RESETDIR_NAME).toBool();
+    copyContentType = ini->value(CONFIG_COPYCONTENTTYPE_NAME).toInt();
+    delete ini;
+}
+
+void MainUi::saveConfig()
+{
+    QString configFilePath(QDir::toNativeSeparators(appPath + "/" +APP_CONFIG_FILE_NAME));
+    QSettings *ini = new QSettings(configFilePath, QSettings::IniFormat);
+    ini->setValue(CONFIG_REPLACEFILE_NAME, replaceFile);
+    ini->setValue(CONFIG_CHECKFILESUM_NAME, checkFileSum);
+    ini->setValue(CONFIG_RESETDIR_NAME, resetDir);
+    ini->setValue(CONFIG_COPYCONTENTTYPE_NAME, copyContentType);
+    delete ini;
+}
+
+void MainUi::loadData()
+{
+    if(!QFileInfo::exists(dataFilePath)){
+        qDebug() << "data file not exists";
+        return;
+    }
+    BackupPathDatas datas = JsonParser::loadBackupPathDataFromFile(dataFilePath);
+    foreach(BackupPathData data, datas){
+        addBackupPath(data.name, data.lastModifyTime, data.srcPath, data.dstPath);
+    }
+
+}
+
+void MainUi::saveData()
+{
+    BackupPathDatas allData;
+    for(int pos = 0; pos < ui->backupPathsTableWidget->rowCount(); pos++){
+        BackupPathData data;
+        data.id = QString::number(pos);
+        data.name = ui->backupPathsTableWidget->item(pos, 1)->text();
+        data.lastModifyTime = ui->backupPathsTableWidget->item(pos, 2)->text();
+        data.srcPath = ui->backupPathsTableWidget->item(pos, 3)->text();
+        data.dstPath = ui->backupPathsTableWidget->item(pos, 4)->text();
+        allData.append(data);
+    }
+    bool saveResult = JsonParser::saveBackupPathDataToFile(dataFilePath, allData);
+    saveResult ? log("保存完成") : log("保存失败");
 }
 
 // add checkbox in tablewidget to select
@@ -192,7 +288,36 @@ void MainUi::addBackupPath(QString name, QString time, QString srcPath, QString 
 
 void MainUi::deleteSelectedPath()
 {
-
+    if(bakChbCheckedCount <= 0){
+        return;
+    }
+    QString keyString;
+    for(int tableRowPos = 0; tableRowPos < ui->backupPathsTableWidget->rowCount();){
+        if(bakPathChbList[tableRowPos]->isChecked()){
+            keyString = ui->backupPathsTableWidget->item(tableRowPos, 1)->text();
+            delete bakPathChbList[tableRowPos];
+            bakPathChbList.removeAt(tableRowPos);
+            delete srcPathWatchModelMap.value(keyString);
+            delete dstPathWatchModelMap.value(keyString);
+            srcPathWatchModelMap.remove(keyString);
+            dstPathWatchModelMap.remove(keyString);
+            srcModelIndexList.remove(keyString);
+            dstModelIndexList.remove(keyString);
+            srcMapCountMap.remove(keyString);
+            dstMapCountMap.remove(keyString);
+            ui->backupPathsTableWidget->removeRow(tableRowPos);
+            bakChbCheckedCount--;
+            if(bakChbCheckedCount <= 0){
+                break;
+            }
+            qDebug() << "delete at pos" << tableRowPos;
+        }
+        else{
+            tableRowPos++;
+        }
+        qDebug() << "123";
+    }
+    bakChbCheckedCount = 0;
 }
 
 // 这是计算备份路径文件夹下的文件数目（不包括文件夹）的函数
@@ -250,12 +375,12 @@ void MainUi::getModelInfoFromIndex(ModelMode mode, QModelIndex modelIndex)
     if(infoWatchModel == nullptr){
         return;
     }
-    if(mode == ModelMode::SRC){
+    if(mode == ModelMode::Src){
         srcModelIndexList[keyString].contains(modelIndex) ? srcModelIndexList[keyString].removeAt(srcModelIndexList[keyString].indexOf(modelIndex))
                                                           : srcModelIndexList[keyString].append(modelIndex);
         getSrcModelInfoFromString(infoWatchModel->rootPath());
     }
-    else if(mode == ModelMode::DST){
+    else if(mode == ModelMode::Dst){
         dstModelIndexList[keyString].contains(modelIndex) ? dstModelIndexList[keyString].removeAt(dstModelIndexList[keyString].indexOf(modelIndex))
                                                           : dstModelIndexList[keyString].append(modelIndex);
         getDstModelInfoFromString(infoWatchModel->rootPath());
@@ -267,7 +392,7 @@ void MainUi::getSrcModelInfoFromIndex(QModelIndex modelIndex)
     if(!modelIndex.isValid()){
         return;
     }
-    getModelInfoFromIndex(ModelMode::SRC, modelIndex);
+    getModelInfoFromIndex(ModelMode::Src, modelIndex);
 }
 
 void MainUi::getDstModelInfoFromIndex(QModelIndex modelIndex)
@@ -275,7 +400,7 @@ void MainUi::getDstModelInfoFromIndex(QModelIndex modelIndex)
     if(!modelIndex.isValid()){
         return;
     }
-    getModelInfoFromIndex(ModelMode::DST, modelIndex);
+    getModelInfoFromIndex(ModelMode::Dst, modelIndex);
 }
 
 void MainUi::getModelInfoFromString(ModelMode mode, QString path)
@@ -284,7 +409,7 @@ void MainUi::getModelInfoFromString(ModelMode mode, QString path)
         return;
     }
     QString keyString=currentSrcPath + currentDstPath;
-    if(mode == ModelMode::SRC){
+    if(mode == ModelMode::Src){
         ui->srcDirTreeView->sortByColumn(0, Qt::AscendingOrder);
         int rowIndex = 0;
         QString displayName = "";
@@ -298,7 +423,7 @@ void MainUi::getModelInfoFromString(ModelMode mode, QString path)
         ui->srcDirHintLineEdit->setText("共" + QString::number(rowIndex) + "项");
         srcMapCountMap.insert(keyString, rowIndex);
     }
-    else if(mode == ModelMode::DST){
+    else if(mode == ModelMode::Dst){
         ui->dstDirTreeView->sortByColumn(0, Qt::AscendingOrder);
         int rowIndex = 0;
         QString displayName = "";
@@ -316,12 +441,12 @@ void MainUi::getModelInfoFromString(ModelMode mode, QString path)
 
 void MainUi::getSrcModelInfoFromString(QString srcPath)
 {
-    getModelInfoFromString(ModelMode::SRC, srcPath);
+    getModelInfoFromString(ModelMode::Src, srcPath);
 }
 
 void MainUi::getDstModelInfoFromString(QString dstPath)
 {
-    getModelInfoFromString(ModelMode::DST, dstPath);
+    getModelInfoFromString(ModelMode::Dst, dstPath);
 }
 
 void MainUi::on_backupPathsTableWidget_itemClicked(QTableWidgetItem *item)
@@ -464,36 +589,7 @@ void MainUi::on_reverseSelectButton_clicked()
 
 void MainUi::on_deletePathsTableButton_clicked()
 {
-    if(bakChbCheckedCount <= 0){
-        return;
-    }
-    QString keyString;
-    for(int tableRowPos = 0; tableRowPos < ui->backupPathsTableWidget->rowCount();){
-        if(bakPathChbList[tableRowPos]->isChecked()){
-            keyString = ui->backupPathsTableWidget->item(tableRowPos, 1)->text();
-            delete bakPathChbList[tableRowPos];
-            bakPathChbList.removeAt(tableRowPos);
-            delete srcPathWatchModelMap.value(keyString);
-            delete dstPathWatchModelMap.value(keyString);
-            srcPathWatchModelMap.remove(keyString);
-            dstPathWatchModelMap.remove(keyString);
-            srcModelIndexList.remove(keyString);
-            dstModelIndexList.remove(keyString);
-            srcMapCountMap.remove(keyString);
-            dstMapCountMap.remove(keyString);
-            ui->backupPathsTableWidget->removeRow(tableRowPos);
-            bakChbCheckedCount--;
-            if(bakChbCheckedCount <= 0){
-                break;
-            }
-            qDebug() << "delete at pos" << tableRowPos;
-        }
-        else{
-            tableRowPos++;
-        }
-        qDebug() << "123";
-    }
-    bakChbCheckedCount = 0;
+    deleteSelectedPath();
 }
 
 void MainUi::on_startBackupButton_clicked()
@@ -502,6 +598,8 @@ void MainUi::on_startBackupButton_clicked()
     quint64 fileCount = 0;
     CopyTaskVector copyTaskVector;
     CopyProgressWindow *copyWindow = new CopyProgressWindow();
+    // parent not set, use Qt::WA_DeleteOnClose to recycle itself after close()
+    copyWindow->setAttribute(Qt::WA_DeleteOnClose);
 
     for(int pathPos = 0; pathPos < ui->backupPathsTableWidget->rowCount(); pathPos++){
         if(bakPathChbList[pathPos]->isChecked()){
@@ -514,19 +612,83 @@ void MainUi::on_startBackupButton_clicked()
             copyTaskVector.append(CopyTask(srcPath, dstPath));
         }
     }
+    if(copyTaskVector.length() <= 0){
+        delete copyWindow;
+        return;
+    }
     copyWindow->setFileCountTotal(fileCount);
     copyWindow->show();
     QThread *copyThread = new QThread();
     CopyWorker *copyWorker = new CopyWorker();
     copyWorker->moveToThread(copyThread);
     copyWorker->setTask(copyTaskVector);
+    copyWorker->setReplaceFile(replaceFile);
+    copyWorker->setCheckFileSum(checkFileSum);
+    copyWorker->setResetDir(resetDir);
     connect(copyThread, &QThread::started, copyWorker, &CopyWorker::copyStart);
     connect(copyWorker, &CopyWorker::copyFinished, copyThread, &QThread::quit);
     connect(copyThread, &QThread::finished, copyWorker, &CopyWorker::deleteLater);
+    connect(copyThread, &QThread::finished, copyThread, &QThread::deleteLater);
 
-    connect(copyWorker, &CopyWorker::copyOneFileSucceed, copyWindow, &CopyProgressWindow::updateSuccessCount);
-    connect(copyWorker, &CopyWorker::copyOneFileFailed, copyWindow, &CopyProgressWindow::updateFailedCount);
+    connect(copyWorker, &CopyWorker::copyFileResult, copyWindow, &CopyProgressWindow::parseCopyResult);
 
     copyThread->start();
+}
+
+
+void MainUi::on_replaceFileCheckBox_stateChanged(int state)
+{
+    state != 0 ? replaceFile = true : replaceFile = false;
+}
+
+void MainUi::on_checkSumCheckBox_clicked()
+{
+    if(ui->checkSumCheckBox->isChecked()){
+        if(MessageBoxExY::Yes == MessageBoxExY::warning("校验文件", "将会在备份之后校验文件哈希值，可能会额外耗费更多磁盘读写及更多时间，是否确定？")){
+            checkFileSum = ui->checkSumCheckBox->isChecked();
+            return;
+        }
+        ui->checkSumCheckBox->setChecked(!ui->checkSumCheckBox->isChecked());
+    }
+    checkFileSum = ui->checkSumCheckBox->isChecked();
+}
+
+void MainUi::on_resetDirCheckBox_clicked()
+{
+    if(ui->resetDirCheckBox->isChecked()){
+        if(MessageBoxExY::Yes == MessageBoxExY::warning("清空文件夹", "将会在备份之前先清空备份文件夹，是否确定？")){
+            resetDir = ui->resetDirCheckBox->isChecked();
+            return;
+        }
+        ui->resetDirCheckBox->setChecked(!ui->resetDirCheckBox->isChecked());
+    }
+    resetDir = ui->resetDirCheckBox->isChecked();
+}
+
+void MainUi::on_openPathTableJsonButton_clicked()
+{
+    InputBakPathWindow *w = new InputBakPathWindow();
+    w->setAttribute(Qt::WA_DeleteOnClose);
+    connect(w, &InputBakPathWindow::sendNewPath, this, &MainUi::insertBackupPath);
+    w->show();
+}
+
+
+void MainUi::on_savePathTableButton_clicked()
+{
+    saveConfig();
+    saveData();
+}
+
+
+void MainUi::on_cpContentRadioButton_clicked()
+{
+    copyContentType = 0;
+}
+
+
+void MainUi::on_cpDirRadioButton_clicked()
+{
+    copyContentType = 1;
 }
 

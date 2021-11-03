@@ -33,11 +33,14 @@ win32-msvc* {
 }
 
 SOURCES += \
+    src/core/jsonparser.cpp \
+    src/gui/inputbakpathwindow.cpp \
     src/core/commoninclude.cpp \
     src/core/copyworker.cpp \
     src/core/main.cpp \
     src/gui/copyprogresswindow.cpp \
     src/gui/mainui.cpp \
+    src/utils/calchash.cpp \
     src/utils/iconinstaller.cpp \
     src/utils/qssinstaller.cpp \
     src/utils/style/proxystyle.cpp \
@@ -48,6 +51,8 @@ SOURCES += \
     src/utils/widget/titlebar.cpp
 
 HEADERS += \
+    src/core/jsonparser.h \
+    src/gui/inputbakpathwindow.h \
     src/core/copyworker.h \
     src/gui/copyprogresswindow.h \
     src/include/commoninclude.h \
@@ -56,12 +61,14 @@ HEADERS += \
     src/include/qssinstaller.h \
     src/include/proxystyle.h \
     src/include/watchfilemodel.h \
+    src/include/calchash.h \
     src/utils/widget/lineeditex.h \
-    src/utils/widget/messageboxexx.h \
+    src/include/messageboxexx.h \
     src/utils/widget/tablewidgetex.h \
     src/utils/widget/titlebar.h
 
 FORMS += \
+    src/gui/inputbakpathwindow.ui \
     src/gui/copyprogresswindow.ui \
     src/gui/mainui.ui \
     src/utils/widget/messageboxexx.ui

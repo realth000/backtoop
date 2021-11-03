@@ -49,7 +49,7 @@ void TitleBar::initUi(TitleBar::TitleBarMode mode, QString textColor, QString ho
     case TitleBarMode::DefaultStyle:
         minB->setGeometry(right-size-size-size, 0, size, size);
         maxB->setGeometry(right-size-size, 0, size, size);
-        connect(minB, &QPushButton::clicked, this,[=]{p->showMinimized();}, Qt::UniqueConnection);
+        connect(minB, &QPushButton::clicked, this,[=]{p->showMinimized();});
         connect(maxB, &QPushButton::clicked, this,[=]{
             if(isMax){
                 p->showNormal();
@@ -58,8 +58,8 @@ void TitleBar::initUi(TitleBar::TitleBarMode mode, QString textColor, QString ho
                 p->showMaximized();
                 isMax = true;
             }
-        }, Qt::UniqueConnection);
-        connect(closeB, &QPushButton::clicked, this,[=]{p->close();}, Qt::UniqueConnection);
+        });
+        connect(closeB, &QPushButton::clicked, this,[=]{p->close();});
         break;
     case TitleBarMode::NoMinButton:
         minB->hide();
@@ -72,19 +72,19 @@ void TitleBar::initUi(TitleBar::TitleBarMode mode, QString textColor, QString ho
                 p->showMaximized();
                 isMax = true;
             }
-        }, Qt::UniqueConnection);
-        connect(closeB, &QPushButton::clicked, this,[=]{p->close();}, Qt::UniqueConnection);
+        });
+        connect(closeB, &QPushButton::clicked, this,[=]{p->close();});
         break;
     case TitleBarMode::NoMaxButton:
         minB->setGeometry(right-size-size, 0, size, size);
         maxB->hide();
-        connect(minB, &QPushButton::clicked, this,[=]{p->showMinimized();}, Qt::UniqueConnection);
-        connect(closeB, &QPushButton::clicked, this,[=]{p->close();}, Qt::UniqueConnection);
+        connect(minB, &QPushButton::clicked, this,[=]{p->showMinimized();});
+        connect(closeB, &QPushButton::clicked, this,[=]{p->close();});
         break;
     case TitleBarMode::NoMinAndMaxButton:
         minB->hide();
         maxB->hide();
-        connect(closeB, &QPushButton::clicked, this,[=]{p->close();}, Qt::UniqueConnection);
+        connect(closeB, &QPushButton::clicked, this,[=]{p->close();});
         break;
     }
     if(!hasMinIcon){minB->setText("━");}

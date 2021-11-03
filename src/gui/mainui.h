@@ -40,11 +40,13 @@ private:
     CheckBoxStyle *checkBoxStyle = nullptr;
     VerticalScrollBarStyle *vScrollBarStyle = nullptr;
     HorizontalScrollBarStyle *hScrollBarStyle = nullptr;
-    PushButtonStyle *pushbuttonStyle = nullptr;
+    PushButtonStyle *pushButtonStyle = nullptr;
+    RadioButtonStyle *radioButtonStyle = nullptr;
 
     QString currentSrcPath;
     QString currentDstPath;
     QString appPath;
+    QString dataFilePath;
 
     // config
     bool replaceFile = false;
@@ -72,6 +74,8 @@ private:
     void initConfig();
     void loadConfig();
     void saveConfig();
+    void loadData();
+    void saveData();
     QWidget* addCheckBox();
     void addBackupPath(QString name, QString time, QString srcPath, QString dstPath);
     void deleteSelectedPath();

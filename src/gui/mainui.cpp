@@ -36,6 +36,7 @@ MainUi::~MainUi()
     delete hScrollBarStyle;
     delete pushButtonStyle;
     delete radioButtonStyle;
+    delete treeViewStyle;
 
     //delete view
     delete dirViewHeaderModel;
@@ -53,7 +54,7 @@ void MainUi::log(QString msg) const
 void MainUi::insertBackupPath(QString name, QString srcPath, QString dstPath)
 {
     qDebug() << "receive new backup path:" << name << srcPath << dstPath;
-    addBackupPath(name, "test Time", srcPath, dstPath);
+    addBackupPath(name, "-", srcPath, dstPath);
 }
 
 
@@ -65,6 +66,8 @@ void MainUi::initUi()
     hScrollBarStyle = new HorizontalScrollBarStyle;
     pushButtonStyle = new PushButtonStyle;
     radioButtonStyle = new RadioButtonStyle;
+    treeViewStyle = new TreeViewStyle();
+    ui->srcDirTreeView->setStyle(treeViewStyle);
 
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setFixedSize(this->width(), this->height());
@@ -82,13 +85,13 @@ void MainUi::initUi()
 
     // Paths table widget
     QStringList horizontalHeaders;
-    horizontalHeaders << "选择" << "名称"<< "上次修改时间" << "源路径" << "备份路径";
+    horizontalHeaders << "选择" << "名称"<< "上次备份时间" << "源路径" << "备份路径";
     ui->backupPathsTableWidget->setColumnCount(horizontalHeaders.length());
     ui->backupPathsTableWidget->setColumnWidth(0, 40);
     ui->backupPathsTableWidget->setColumnWidth(1, 220);
-    ui->backupPathsTableWidget->setColumnWidth(2, 130);
-    ui->backupPathsTableWidget->setColumnWidth(3, 320);
-    ui->backupPathsTableWidget->setColumnWidth(4, 10);
+    ui->backupPathsTableWidget->setColumnWidth(2, 160);
+    ui->backupPathsTableWidget->setColumnWidth(3, 310);
+    ui->backupPathsTableWidget->setColumnWidth(4, 310);
     ui->backupPathsTableWidget->setHorizontalHeaderLabels(horizontalHeaders);
     ui->backupPathsTableWidget->horizontalHeader()->setStretchLastSection(true);
     ui->backupPathsTableWidget->verticalHeader()->setVisible(false);
@@ -121,17 +124,21 @@ void MainUi::initUi()
     dirViewHeaderModel = new QStandardItemModel();
     dirViewHeaderModel->setHorizontalHeaderLabels(dirViewHeaders);
     ui->srcDirTreeView->header()->setModel(dirViewHeaderModel);
+    ui->srcDirTreeView->header()->setDefaultAlignment(Qt::AlignCenter);
     ui->srcDirTreeView->setColumnWidth(0, 270);
     ui->srcDirTreeView->setColumnWidth(1, 70);
     ui->srcDirTreeView->setColumnWidth(2, 60);
     ui->srcDirTreeView->setColumnWidth(3, 110);
     ui->dstDirTreeView->header()->setModel(dirViewHeaderModel);
+    ui->dstDirTreeView->header()->setDefaultAlignment(Qt::AlignCenter);
     ui->dstDirTreeView->setColumnWidth(0, 270);
     ui->dstDirTreeView->setColumnWidth(1, 70);
     ui->dstDirTreeView->setColumnWidth(2, 60);
     ui->dstDirTreeView->setColumnWidth(3, 110);
     ui->srcDirTreeView->setWordWrap(false);
     ui->dstDirTreeView->setWordWrap(false);
+    ui->srcDirTreeView->setStyle(treeViewStyle);
+    ui->dstDirTreeView->setStyle(treeViewStyle);
 
 //    connect(ui->srcDirTreeView, &QTreeView::clicked,   this, &MainUi::getSrcModelInfo, Qt::UniqueConnection);
     connect(ui->srcDirTreeView, &QTreeView::collapsed, this, &MainUi::getSrcModelInfoFromIndex, Qt::UniqueConnection);
@@ -231,7 +238,7 @@ void MainUi::loadData()
     }
     BackupPathDatas datas = JsonParser::loadBackupPathDataFromFile(dataFilePath);
     foreach(BackupPathData data, datas){
-        addBackupPath(data.name, data.lastModifyTime, data.srcPath, data.dstPath);
+        addBackupPath(data.name, data.lastBackupTime, data.srcPath, data.dstPath);
     }
 
 }
@@ -243,7 +250,7 @@ void MainUi::saveData()
         BackupPathData data;
         data.id = QString::number(pos);
         data.name = ui->backupPathsTableWidget->item(pos, 1)->text();
-        data.lastModifyTime = ui->backupPathsTableWidget->item(pos, 2)->text();
+        data.lastBackupTime = ui->backupPathsTableWidget->item(pos, 2)->text();
         data.srcPath = ui->backupPathsTableWidget->item(pos, 3)->text();
         data.dstPath = ui->backupPathsTableWidget->item(pos, 4)->text();
         allData.append(data);
@@ -449,6 +456,17 @@ void MainUi::getDstModelInfoFromString(QString dstPath)
     getModelInfoFromString(ModelMode::Dst, dstPath);
 }
 
+void MainUi::updateBackupTime()
+{
+    int pos = 0;
+    foreach(const QCheckBox *chb, bakPathChbList){
+        if(chb->isChecked()){
+            ui->backupPathsTableWidget->item(pos, 2)->setText(QDateTime::currentDateTime().toString(DATA_JSON_TIME_FORMAT));
+        }
+        pos++;
+    }
+}
+
 void MainUi::on_backupPathsTableWidget_itemClicked(QTableWidgetItem *item)
 {
     if(item == nullptr){
@@ -625,13 +643,14 @@ void MainUi::on_startBackupButton_clicked()
     copyWorker->setReplaceFile(replaceFile);
     copyWorker->setCheckFileSum(checkFileSum);
     copyWorker->setResetDir(resetDir);
+    // lifetime management
     connect(copyThread, &QThread::started, copyWorker, &CopyWorker::copyStart);
     connect(copyWorker, &CopyWorker::copyFinished, copyThread, &QThread::quit);
     connect(copyThread, &QThread::finished, copyWorker, &CopyWorker::deleteLater);
     connect(copyThread, &QThread::finished, copyThread, &QThread::deleteLater);
 
     connect(copyWorker, &CopyWorker::copyFileResult, copyWindow, &CopyProgressWindow::parseCopyResult);
-
+    connect(copyWorker, &CopyWorker::copyFinished, this, &MainUi::updateBackupTime);
     copyThread->start();
 }
 
@@ -639,18 +658,20 @@ void MainUi::on_startBackupButton_clicked()
 void MainUi::on_replaceFileCheckBox_stateChanged(int state)
 {
     state != 0 ? replaceFile = true : replaceFile = false;
+    saveConfig();
 }
 
 void MainUi::on_checkSumCheckBox_clicked()
 {
     if(ui->checkSumCheckBox->isChecked()){
-        if(MessageBoxExY::Yes == MessageBoxExY::warning("校验文件", "将会在备份之后校验文件哈希值，可能会额外耗费更多磁盘读写及更多时间，是否确定？")){
+        if(MessageBoxExY::Yes == MessageBoxExY::warning("校验文件", "将会在备份之后校验文件哈希值，额外耗费更多磁盘读写及更多时间，是否确定？")){
             checkFileSum = ui->checkSumCheckBox->isChecked();
             return;
         }
         ui->checkSumCheckBox->setChecked(!ui->checkSumCheckBox->isChecked());
     }
     checkFileSum = ui->checkSumCheckBox->isChecked();
+    saveConfig();
 }
 
 void MainUi::on_resetDirCheckBox_clicked()
@@ -663,6 +684,7 @@ void MainUi::on_resetDirCheckBox_clicked()
         ui->resetDirCheckBox->setChecked(!ui->resetDirCheckBox->isChecked());
     }
     resetDir = ui->resetDirCheckBox->isChecked();
+    saveConfig();
 }
 
 void MainUi::on_openPathTableJsonButton_clicked()
@@ -676,7 +698,7 @@ void MainUi::on_openPathTableJsonButton_clicked()
 
 void MainUi::on_savePathTableButton_clicked()
 {
-    saveConfig();
+//    saveConfig();
     saveData();
 }
 
@@ -684,11 +706,13 @@ void MainUi::on_savePathTableButton_clicked()
 void MainUi::on_cpContentRadioButton_clicked()
 {
     copyContentType = 0;
+    saveConfig();
 }
 
 
 void MainUi::on_cpDirRadioButton_clicked()
 {
     copyContentType = 1;
+    saveConfig();
 }
 

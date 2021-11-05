@@ -42,6 +42,7 @@ private:
     HorizontalScrollBarStyle *hScrollBarStyle = nullptr;
     PushButtonStyle *pushButtonStyle = nullptr;
     RadioButtonStyle *radioButtonStyle = nullptr;
+    TreeViewStyle *treeViewStyle = nullptr;
 
     QString currentSrcPath;
     QString currentDstPath;
@@ -90,6 +91,7 @@ private slots:
     void getModelInfoFromString(ModelMode mode, QString path);
     void getSrcModelInfoFromString(QString srcPath);
     void getDstModelInfoFromString(QString dstPath);
+    void updateBackupTime();
     void on_backupPathsTableWidget_itemClicked(QTableWidgetItem *item);
     void on_allSelectButton_clicked();
     void on_reverseSelectButton_clicked();

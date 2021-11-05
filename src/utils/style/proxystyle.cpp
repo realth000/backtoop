@@ -671,3 +671,60 @@ void ComboBoxStyle::drawComplexControl(QStyle::ComplexControl control, const QSt
 //{
 
 //}
+
+void TreeViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+    if(element == PE_IndicatorBranch){
+        if(const QStyleOption *tvb = qstyleoption_cast<const QStyleOption *>(option)){
+            // 展开children用的branch
+            if(tvb->state & State_Children){
+                QRect branchRect = tvb->rect;
+                painter->setRenderHint(QPainter::Antialiasing);
+                painter->save();
+                painter->setPen(QPen(tvb->state & State_MouseOver ? QColor(57,95,108) : QColor(240,255,255), 2));
+                painter->setBrush(tvb->state & State_MouseOver ? QColor(240,255,255) : QColor(57,95,108));
+                // for branchRect size = 20x21(default)
+                int basePosX = branchRect.x() + branchRect.width()*0.5;
+                int basePosY = branchRect.y() + 0.5*branchRect.height();
+                QPoint branchPos[3];
+                // branch expanded
+                if(tvb->state & State_Open){
+                    branchPos[0] = QPoint(basePosX - 5, basePosY - 3);
+                    branchPos[1] = QPoint(basePosX    , basePosY + 3);
+                    branchPos[2] = QPoint(basePosX + 5, basePosY - 3);
+                }
+                else{
+                    branchPos[0] = QPoint(basePosX - 3, basePosY - 5);
+                    branchPos[1] = QPoint(basePosX + 3, basePosY    );
+                    branchPos[2] = QPoint(basePosX - 3, basePosY + 5);
+                }
+                painter->drawPolygon(branchPos, 3);
+                painter->restore();
+                return;
+            }
+        }
+    }
+    // use PE_PanelItemViewItem instead of PE_PanelItemViewRow if want to paint when mouseover or selected
+    else if(element == PE_PanelItemViewItem){
+        if(const QStyleOptionViewItem  *tvi = qstyleoption_cast<const QStyleOptionViewItem *>(option)){
+            QRect rowRect = tvi->rect;
+            painter->setRenderHint(QPainter::Antialiasing);
+            painter->save();
+            painter->setPen(Qt::transparent);
+            if(tvi->state & State_MouseOver){
+                painter->setBrush(QColor(37,65,88,150));
+            }
+            else if(tvi->state & State_Selected){
+                painter->setBrush(QColor(37,65,88));
+            }
+            else{
+                painter->setBrush(Qt::transparent);
+            }
+            painter->drawRect(rowRect);
+            painter->restore();
+        }
+    }
+    return;
+    // do not use this
+    QProxyStyle::drawPrimitive(element, option, painter, widget);
+}

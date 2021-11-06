@@ -164,29 +164,6 @@
     <string>备份前清空</string>
    </property>
   </widget>
-  <widget class="QSpinBox" name="cpThreadSpinBox">
-   <property name="geometry">
-    <rect>
-     <x>80</x>
-     <y>340</y>
-     <width>42</width>
-     <height>25</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>340</y>
-     <width>41</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>线程数</string>
-   </property>
-  </widget>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>

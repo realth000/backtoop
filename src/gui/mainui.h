@@ -16,6 +16,11 @@ enum ModelMode{
     Dst
 };
 
+enum CopyContentType{
+    Content = 0,
+    Folder = 1
+};
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainUi; }
 QT_END_NAMESPACE
@@ -53,7 +58,7 @@ private:
     bool replaceFile = false;
     bool checkFileSum = false;
     bool resetDir = false;
-    int copyContentType = 0;
+    int copyContentType = CopyContentType::Content;
 
     // file model: watching source path and destination path
     WatchFileModel *srcPathWatchModel = nullptr;

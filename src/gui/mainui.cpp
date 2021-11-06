@@ -637,7 +637,7 @@ void MainUi::on_startBackupButton_clicked()
                 QDir(dstPath).mkdir(dstPath);
             }
             else{
-                MessageBoxExY::warning("备份失败", "拷贝类型错误");
+                MessageBoxExY::critical("备份失败", "拷贝类型错误");
             }
 
             getFileCount(srcPath, fileCount);

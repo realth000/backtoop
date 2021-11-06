@@ -17,6 +17,7 @@ InputBakPathWindow::InputBakPathWindow(QWidget *parent) :
 InputBakPathWindow::~InputBakPathWindow()
 {
     delete ui;
+    delete pushButtonStyle;
 }
 
 void InputBakPathWindow::initUi()

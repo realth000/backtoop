@@ -82,6 +82,7 @@ private:
     void saveConfig();
     void loadData();
     void saveData();
+    void clearData();
     QWidget* addCheckBox();
     void addBackupPath(QString name, QString time, QString srcPath, QString dstPath);
     void deleteSelectedPath();
@@ -109,5 +110,6 @@ private slots:
     void on_savePathTableButton_clicked();
     void on_cpContentRadioButton_clicked();
     void on_cpDirRadioButton_clicked();
+    void on_refreshPathTableButton_clicked();
 };
 #endif // MAINUI_H

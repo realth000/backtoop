@@ -1,6 +1,7 @@
 ﻿#include "copyprogresswindow.h"
 #include "ui_copyprogresswindow.h"
 #include <QScrollBar>
+#include <QDebug>
 #include "qssinstaller.h"
 #include "commoninclude.h"
 #include "iconinstaller.h"
@@ -49,6 +50,27 @@ void CopyProgressWindow::parseCopyResult(QString filePath, CopyResult result)
     }
 }
 
+void CopyProgressWindow::copyResultTerminated()
+{
+    ui->copyLogTextEdit->append(QString("<font color=\"%2\"><br>Terminated</font>").arg(LOGTEXTEDIT_COPY_FAILED_COLOR));
+}
+
+void CopyProgressWindow::setCurrentFilePath(QString filePath)
+{
+    ui->copyCurrentPathLabel->setText(filePath);
+}
+
+void CopyProgressWindow::copyFinished()
+{
+    ui->copyStatusLabel->setText("备份完成");
+}
+
+void CopyProgressWindow::closeEvent(QCloseEvent *e)
+{
+    emit terminateCopyWork();
+    e->accept();
+}
+
 void CopyProgressWindow::initUi()
 {
     pushButtonStyle = new PushButtonStyle();
@@ -63,9 +85,9 @@ void CopyProgressWindow::initUi()
     // Title bar style
     ui->titleBar->setFixedWidth(this->width());
     ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
-    ui->titleBar->setTitleText("备份中");
+    ui->titleBar->setTitleText("备份");
     ui->titleBar->setUseGradient(true);
-    ui->titleBar->initUi(TitleBar::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
+    ui->titleBar->initUi(TitleBarMode::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
                          "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(18,18,18), stop: 1 rgb(21,21,21))", "rgb(240,255,255)");
     ui->titleBar->setTitleIcon(TITLEBAR_TITLEICON);
 
@@ -101,3 +123,10 @@ void CopyProgressWindow::updateFailedCount(QString filePath)
     updateFileCount(fileCountCopied);
     ui->copyLogTextEdit->append(QString("<font color=\"%2\">Failed: %1</font>").arg(filePath, LOGTEXTEDIT_COPY_FAILED_COLOR));
 }
+
+void CopyProgressWindow::on_copyStopPushButton_clicked()
+{
+    qDebug() << "emit terminate";
+    emit terminateCopyWork();
+}
+

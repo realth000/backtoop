@@ -73,4 +73,9 @@ public:
 //    virtual void drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
 };
 
+class TreeViewStyle: public QProxyStyle
+{
+public:
+    virtual void drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
+};
 #endif // PROXYSTYLE_H

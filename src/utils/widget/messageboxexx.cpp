@@ -19,7 +19,7 @@ MessageBoxExX::MessageBoxExX(QWidget *parent) :
     ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
     ui->titleBar->setTitleText(TITLEBAR_TITLETEXT);
     ui->titleBar->setUseGradient(true);
-    ui->titleBar->initUi(TitleBar::NoMinAndMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
+    ui->titleBar->initUi(TitleBarMode::NoMinAndMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
                          "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(18,18,18), stop: 1 rgb(21,21,21))", "rgb(240,255,255)");
     ui->titleBar->setTitleIcon(TITLEBAR_TITLEICON);
 
@@ -107,6 +107,23 @@ int MessageBoxExX::question(QString titleText, QString text, QString yesText, QS
     return result;
 }
 
+void MessageBoxExX::critical(QString titleText, QString text, QString buttonText)
+{
+    ui->titleBar->setTitleText(titleText);
+    QMessageBox tmb;
+    tmb.setIcon(QMessageBox::Critical);
+    QPixmap t = QPixmap(tmb.iconPixmap());
+    t.scaled(ui->iconL->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    ui->iconL->setScaledContents(true);
+    ui->iconL->setPixmap(t);
+    ui->infoTE->setText(text);
+    //    ui->infoTE->setAlignment(Qt::AlignHCenter);
+    ui->button->setText(buttonText);
+    ui->button2->setVisible(false);
+    connect(ui->button, &QPushButton::clicked, this, &MessageBoxExX::close);
+    this->exec();
+}
+
 void MessageBoxExX::setVerticalScrollBarStyle(VerticalScrollBarStyle *style)
 {
     ui->infoTE->verticalScrollBar()->setStyle(style);
@@ -150,4 +167,11 @@ int MessageBoxExY::question(QString titleText, QString text, QString yesText, QS
     int ret = x->question(titleText, text, yesText, noText);
     delete x;
     return ret;
+}
+
+void MessageBoxExY::critical(QString titleText, QString text, QString buttonText)
+{
+    MessageBoxExX *x = new MessageBoxExX;
+    x->critical(titleText, text, buttonText);
+    delete x;
 }

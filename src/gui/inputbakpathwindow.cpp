@@ -17,6 +17,7 @@ InputBakPathWindow::InputBakPathWindow(QWidget *parent) :
 InputBakPathWindow::~InputBakPathWindow()
 {
     delete ui;
+    delete pushButtonStyle;
 }
 
 void InputBakPathWindow::initUi()
@@ -33,7 +34,7 @@ void InputBakPathWindow::initUi()
     ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
     ui->titleBar->setTitleText("添加");
     ui->titleBar->setUseGradient(true);
-    ui->titleBar->initUi(TitleBar::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
+    ui->titleBar->initUi(TitleBarMode::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
                          "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(18,18,18), stop: 1 rgb(21,21,21))", "rgb(240,255,255)");
     ui->titleBar->setTitleIcon(TITLEBAR_TITLEICON);
 

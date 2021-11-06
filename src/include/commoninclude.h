@@ -76,7 +76,7 @@
 #define PADDING_LEFT  4
 #define PADDING_DOWN  4
 
-#define BACKUPPATH_ITEM_EXIST_TEXT_COLOR "#f0ffff"
+#define BACKUPPATH_ITEM_EXIST_TEXT_COLOR     "#f0ffff"
 #define BACKUPPATH_ITEM_NOT_EXIST_TEXT_COLOR "#cd1e2a"
 
 #define BACKUPPATH_JSON_ENGINE_VERSION "1.0"
@@ -85,11 +85,11 @@
 #define LOGTEXTEDIT_COPY_SUCCESS_COLOR "#f0ffff"
 #define LOGTEXTEDIT_COPY_FAILED_COLOR  "#cd1e2a"
 
-#define APP_CONFIG_FILE_NAME "config.ini"
-#define APP_DATA_FILE_NAME "data.json"
-#define CONFIG_REPLACEFILE_NAME "/Copy/ReplaceFile"
-#define CONFIG_CHECKFILESUM_NAME "/Copy/CheckFileSum"
-#define CONFIG_RESETDIR_NAME "/Copy/ResetDir"
+#define APP_CONFIG_FILE_NAME        "config.ini"
+#define APP_DATA_FILE_NAME          "data.json"
+#define CONFIG_REPLACEFILE_NAME     "/Copy/ReplaceFile"
+#define CONFIG_CHECKFILESUM_NAME    "/Copy/CheckFileSum"
+#define CONFIG_RESETDIR_NAME        "/Copy/ResetDir"
 #define CONFIG_COPYCONTENTTYPE_NAME "/Copy/CopyContentType"
 
 typedef QPair<QString, QString> CopyTask;
@@ -109,7 +109,7 @@ enum CopyResult{
 struct BackupPathData{
     QString id;
     QString name;
-    QString lastModifyTime;
+    QString lastBackupTime;
     QString srcPath;
     QString dstPath;
 };
@@ -117,12 +117,13 @@ struct BackupPathData{
 typedef  QVector<BackupPathData> BackupPathDatas;
 
 // backup path data json defines
-#define DATA_JSON_ENGINEVERSION_NAME "backuppath_json_engine_version"
-#define DATA_JSON_TIME_NAME "time"
-#define DATA_JSON_DATACOUNT_NAME "data_count"
-#define DATA_JSON_NAME_NAME "name"
-#define DATA_JSON_LASTMODTIME_NAME "last_modify_time"
-#define DATA_JSON_SRCPATH_TIME "source_path"
-#define DATA_JSON_DSTPATH_TIME "destination_path"
+#define DATA_JSON_ENGINEVERSION_NAME "BackupJsonEngineVersion"
+#define DATA_JSON_TIME_NAME          "Time"
+#define DATA_JSON_DATACOUNT_NAME     "DataCount"
+#define DATA_JSON_NAME_NAME          "Name"
+#define DATA_JSON_LASTMODTIME_NAME   "LastBackupTime"
+#define DATA_JSON_SRCPATH_TIME       "SourcePath"
+#define DATA_JSON_DSTPATH_TIME       "DestinationPath"
+#define DATA_JSON_TIME_FORMAT        "yyyy-MM-dd HH:mm:ss"
 
 #endif // COMMONINCLUDE_H

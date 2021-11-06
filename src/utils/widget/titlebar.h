@@ -12,7 +12,7 @@ enum TitleBarMode{
     NoMinButton =       0x01,
     NoMaxButton =       0x02,
     NoCloseButton =     0x04,
-    NoMinAndMaxButton = 0x06
+    NoMinAndMaxButton = 0x03
 };
 
 Q_DECLARE_FLAGS(TitleBarModes, TitleBarMode)

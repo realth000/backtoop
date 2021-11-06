@@ -42,8 +42,12 @@ MainUi::~MainUi()
     delete dirViewHeaderModel;
 
     // delete model
-    qDeleteAll(srcPathWatchModelMap);
-    qDeleteAll(dstPathWatchModelMap);
+    if(srcPathWatchModelMap.count() >= 1){
+        qDeleteAll(srcPathWatchModelMap);
+    }
+    if(dstPathWatchModelMap.count() >= 1){
+        qDeleteAll(dstPathWatchModelMap);
+    }
 }
 
 void MainUi::log(QString msg) const
@@ -257,6 +261,37 @@ void MainUi::saveData()
     }
     bool saveResult = JsonParser::saveBackupPathDataToFile(dataFilePath, allData);
     saveResult ? log("保存完成") : log("保存失败");
+}
+
+void MainUi::clearData()
+{
+    ui->backupPathsTableWidget->clearContents();
+    ui->backupPathsTableWidget->setRowCount(0);
+    bakChbCheckedCount = 0;
+    if(bakPathChbList.length() >= 1){
+        qDeleteAll(bakPathChbList);
+        bakPathChbList.clear();
+    }
+    dstPathWatchModel = nullptr;
+    if(srcPathWatchModelMap.size() >= 1){
+        qDeleteAll(srcPathWatchModelMap);
+        srcPathWatchModelMap.clear();
+    }
+
+    if(dstPathWatchModelMap.size() >= 1){
+        qDeleteAll(dstPathWatchModelMap);
+        dstPathWatchModelMap.clear();
+    }
+    srcModelIndexList.clear();
+    dstModelIndexList.clear();
+    srcMapCountMap.clear();
+    dstMapCountMap.clear();
+    if(dirViewHeaderModel != nullptr){
+        delete dirViewHeaderModel;
+    }
+    dirViewHeaderModel = nullptr;
+    srcPathWatchModel = nullptr;
+    dstPathWatchModel = nullptr;
 }
 
 // add checkbox in tablewidget to select
@@ -735,5 +770,12 @@ void MainUi::on_cpDirRadioButton_clicked()
 {
     copyContentType = CopyContentType::Folder;
     saveConfig();
+}
+
+
+void MainUi::on_refreshPathTableButton_clicked()
+{
+    clearData();
+    loadData();
 }
 

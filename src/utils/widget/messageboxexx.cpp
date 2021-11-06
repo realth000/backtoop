@@ -19,7 +19,7 @@ MessageBoxExX::MessageBoxExX(QWidget *parent) :
     ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
     ui->titleBar->setTitleText(TITLEBAR_TITLETEXT);
     ui->titleBar->setUseGradient(true);
-    ui->titleBar->initUi(TitleBar::NoMinAndMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
+    ui->titleBar->initUi(TitleBarMode::NoMinAndMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
                          "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(18,18,18), stop: 1 rgb(21,21,21))", "rgb(240,255,255)");
     ui->titleBar->setTitleIcon(TITLEBAR_TITLEICON);
 

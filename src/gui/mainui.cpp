@@ -79,7 +79,7 @@ void MainUi::initUi()
     ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
     ui->titleBar->setTitleText(TITLEBAR_TITLETEXT);
     ui->titleBar->setUseGradient(true);
-    ui->titleBar->initUi(TitleBar::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
+    ui->titleBar->initUi(TitleBarMode::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
                          "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(18,18,18), stop: 1 rgb(21,21,21))", "rgb(240,255,255)");
     ui->titleBar->setTitleIcon(TITLEBAR_TITLEICON);
 
@@ -648,9 +648,16 @@ void MainUi::on_startBackupButton_clicked()
     connect(copyWorker, &CopyWorker::copyFinished, copyThread, &QThread::quit);
     connect(copyThread, &QThread::finished, copyWorker, &CopyWorker::deleteLater);
     connect(copyThread, &QThread::finished, copyThread, &QThread::deleteLater);
+    connect(copyWorker, &CopyWorker::copyTerminated, copyThread, &QThread::quit);
 
+    // send messages
     connect(copyWorker, &CopyWorker::copyFileResult, copyWindow, &CopyProgressWindow::parseCopyResult);
     connect(copyWorker, &CopyWorker::copyFinished, this, &MainUi::updateBackupTime);
+    connect(copyWorker, &CopyWorker::copyTerminated, copyWindow, &CopyProgressWindow::copyResultTerminated);
+
+    // quit
+    QMetaObject::Connection c = connect(copyWindow, &CopyProgressWindow::terminateCopyWork, copyWorker, &CopyWorker::copyTerminate, Qt::DirectConnection);
+    copyWorker->moveToThread(copyThread);
     copyThread->start();
 }
 

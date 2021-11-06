@@ -7,22 +7,26 @@
 #include <QLabel>
 #include <QPushButton>
 
+enum TitleBarMode{
+    DefaultStyle =      0x00,
+    NoMinButton =       0x01,
+    NoMaxButton =       0x02,
+    NoCloseButton =     0x04,
+    NoMinAndMaxButton = 0x03
+};
+
+Q_DECLARE_FLAGS(TitleBarModes, TitleBarMode)
+Q_DECLARE_OPERATORS_FOR_FLAGS(TitleBarModes)
+
 class TitleBar : public QGroupBox
 {
     Q_OBJECT
 
 
 public:
-    enum TitleBarMode{
-        DefaultStyle = 0,
-        NoMinButton = 1,
-        NoMaxButton = 2,
-        NoMinAndMaxButton = 3
-    };
-
     TitleBar(QWidget *parent = nullptr);
     ~TitleBar();
-    void initUi(enum TitleBarMode mode = DefaultStyle, QString textColor = "black", QString hover_textColor = "white", QString background = "white", QString hover_backgroundColor = "black");
+    void initUi(TitleBarModes mode = DefaultStyle, QString textColor = "black", QString hover_textColor = "white", QString background = "white", QString hover_backgroundColor = "black");
     void setTitleText(QString title) const;
     void setTitleStyleSheet(QString styleSheet) const;
     void setMinButtonStyleSheet(QString styleSheet) const;
@@ -46,13 +50,13 @@ private:
     QPoint start;
     QLabel *icoL;
     QLabel *titleL;
-    QPushButton *minB;
+    QPushButton *minimumButton;
     bool hasMinIcon = false;
     bool hasMaxIcon = false;
     bool hasCloseIcon = false;
     bool isMax = false;
-    QPushButton *maxB;
-    QPushButton *closeB;
+    QPushButton *maximumButton;
+    QPushButton *closeButton;
     QWidget *p;
 };
 

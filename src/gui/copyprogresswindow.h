@@ -2,6 +2,7 @@
 #define COPYPROGRESSWINDOW_H
 
 #include <QDialog>
+#include <QCloseEvent>
 #include "proxystyle.h"
 #include "commoninclude.h"
 
@@ -18,8 +19,20 @@ public:
     ~CopyProgressWindow();
     void setFileCountTotal(quint64 count);
 
+signals:
+    void terminateCopyWork();
+
 public slots:
     void parseCopyResult(QString filePath, CopyResult result);
+    void copyResultTerminated();
+    void setCurrentFilePath(QString filePath);
+    void copyFinished();
+
+protected:
+    virtual void closeEvent(QCloseEvent *e) override;
+
+private slots:
+    void on_copyStopPushButton_clicked();
 
 private:
     Ui::CopyProgressWindow *ui;

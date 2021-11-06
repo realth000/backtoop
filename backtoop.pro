@@ -48,7 +48,8 @@ SOURCES += \
     src/utils/widget/lineeditex.cpp \
     src/utils/widget/messageboxexx.cpp \
     src/utils/widget/tablewidgetex.cpp \
-    src/utils/widget/titlebar.cpp
+    src/utils/widget/titlebar.cpp \
+    src/utils/widget/treeviewex.cpp
 
 HEADERS += \
     src/core/jsonparser.h \
@@ -65,7 +66,8 @@ HEADERS += \
     src/utils/widget/lineeditex.h \
     src/include/messageboxexx.h \
     src/utils/widget/tablewidgetex.h \
-    src/utils/widget/titlebar.h
+    src/utils/widget/titlebar.h \
+    src/utils/widget/treeviewex.h
 
 FORMS += \
     src/gui/inputbakpathwindow.ui \

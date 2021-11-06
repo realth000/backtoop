@@ -16,6 +16,11 @@ enum ModelMode{
     Dst
 };
 
+enum CopyContentType{
+    Content = 0,
+    Folder = 1
+};
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainUi; }
 QT_END_NAMESPACE
@@ -42,6 +47,7 @@ private:
     HorizontalScrollBarStyle *hScrollBarStyle = nullptr;
     PushButtonStyle *pushButtonStyle = nullptr;
     RadioButtonStyle *radioButtonStyle = nullptr;
+    TreeViewStyle *treeViewStyle = nullptr;
 
     QString currentSrcPath;
     QString currentDstPath;
@@ -52,7 +58,7 @@ private:
     bool replaceFile = false;
     bool checkFileSum = false;
     bool resetDir = false;
-    int copyContentType = 0;
+    int copyContentType = CopyContentType::Content;
 
     // file model: watching source path and destination path
     WatchFileModel *srcPathWatchModel = nullptr;
@@ -76,6 +82,7 @@ private:
     void saveConfig();
     void loadData();
     void saveData();
+    void clearData();
     QWidget* addCheckBox();
     void addBackupPath(QString name, QString time, QString srcPath, QString dstPath);
     void deleteSelectedPath();
@@ -90,6 +97,7 @@ private slots:
     void getModelInfoFromString(ModelMode mode, QString path);
     void getSrcModelInfoFromString(QString srcPath);
     void getDstModelInfoFromString(QString dstPath);
+    void updateBackupTime();
     void on_backupPathsTableWidget_itemClicked(QTableWidgetItem *item);
     void on_allSelectButton_clicked();
     void on_reverseSelectButton_clicked();
@@ -102,5 +110,6 @@ private slots:
     void on_savePathTableButton_clicked();
     void on_cpContentRadioButton_clicked();
     void on_cpDirRadioButton_clicked();
+    void on_refreshPathTableButton_clicked();
 };
 #endif // MAINUI_H

@@ -7,12 +7,12 @@ TitleBar::TitleBar(QWidget *parent):
     p = parent;
     icoL = new QLabel(this);
     titleL = new QLabel(this);
-    minB = new QPushButton(this);
-    maxB = new QPushButton(this);
-    closeB = new QPushButton(this);
-    minB->setFocusPolicy(Qt::NoFocus);
-    maxB->setFocusPolicy(Qt::NoFocus);
-    closeB->setFocusPolicy(Qt::NoFocus);
+    minimumButton = new QPushButton(this);
+    maximumButton = new QPushButton(this);
+    closeButton = new QPushButton(this);
+    minimumButton->setFocusPolicy(Qt::NoFocus);
+    maximumButton->setFocusPolicy(Qt::NoFocus);
+    closeButton->setFocusPolicy(Qt::NoFocus);
 }
 
 TitleBar::~TitleBar()
@@ -20,12 +20,12 @@ TitleBar::~TitleBar()
     p = nullptr;
     delete icoL;
     delete titleL;
-    delete minB;
-    delete maxB;
-    delete closeB;
+    delete minimumButton;
+    delete maximumButton;
+    delete closeButton;
 }
 
-void TitleBar::initUi(TitleBar::TitleBarMode mode, QString textColor, QString hover_textColor, QString background, QString hover_backgroundColor)
+void TitleBar::initUi(TitleBarModes mode, QString textColor, QString hover_textColor, QString background, QString hover_backgroundColor)
 {
     if(useGradient){
         this->setStyleSheet(QString("QWidget{font:15px;color:%1}"
@@ -44,61 +44,59 @@ void TitleBar::initUi(TitleBar::TitleBarMode mode, QString textColor, QString ho
     const int size = this->height();
     icoL->setGeometry(0, 0, size, size);
     titleL->setGeometry(size+5,0,700,size);
-    closeB->setGeometry(right - size, 0, size, size);
-    switch (mode) {
-    case TitleBarMode::DefaultStyle:
-        minB->setGeometry(right-size-size-size, 0, size, size);
-        maxB->setGeometry(right-size-size, 0, size, size);
-        connect(minB, &QPushButton::clicked, this,[=]{p->showMinimized();});
-        connect(maxB, &QPushButton::clicked, this,[=]{
-            if(isMax){
-                p->showNormal();
-                isMax = false;
-            }else{
-                p->showMaximized();
-                isMax = true;
-            }
-        });
-        connect(closeB, &QPushButton::clicked, this,[=]{p->close();});
-        break;
-    case TitleBarMode::NoMinButton:
-        minB->hide();
-        maxB->setGeometry(right-size-size, 0, size, size);
-        connect(maxB, &QPushButton::clicked, this,[=]{
-            if(isMax){
-                p->showNormal();
-                isMax = false;
-            }else{
-                p->showMaximized();
-                isMax = true;
-            }
-        });
-        connect(closeB, &QPushButton::clicked, this,[=]{p->close();});
-        break;
-    case TitleBarMode::NoMaxButton:
-        minB->setGeometry(right-size-size, 0, size, size);
-        maxB->hide();
-        connect(minB, &QPushButton::clicked, this,[=]{p->showMinimized();});
-        connect(closeB, &QPushButton::clicked, this,[=]{p->close();});
-        break;
-    case TitleBarMode::NoMinAndMaxButton:
-        minB->hide();
-        maxB->hide();
-        connect(closeB, &QPushButton::clicked, this,[=]{p->close();});
-        break;
-    }
-    if(!hasMinIcon){minB->setText("━");}
-    if(!hasMaxIcon){
-        maxB->setStyleSheet(QString("QPushButton{font:bold;border:none;border-radius:0px}"
-                            "QPushButton:hover{color:rgb(93,94,95);background-color:%1}").arg(hover_backgroundColor));
-        maxB->setText("█");}
-    if(!hasCloseIcon){
-        closeB->setStyleSheet("QPushButton{font:bold;border:none;border-radius:0px}"
-                              "QPushButton:hover{background-color:rgb(232,17,35)}");
-        closeB->setText("X");//⨯✗✘（✕）✖X❌
+    int pos = 1;
+    // config closeButton
+    if(mode & NoCloseButton){
+        closeButton->hide();
     }
     else{
-        closeB->setStyleSheet("QPushButton:hover{background-color:rgb(232,17,35)}");
+        closeButton->setGeometry(right - size, 0, size, size);
+        if(!hasCloseIcon){
+            closeButton->setStyleSheet("QPushButton{font:bold;border:none;border-radius:0px}"
+                                       "QPushButton:hover{background-color:rgb(232,17,35)}");
+            closeButton->setText("X");//⨯✗✘（✕）✖X❌
+        }
+        else{
+            closeButton->setStyleSheet("QPushButton:hover{background-color:rgb(232,17,35)}");
+        }
+        connect(closeButton, &QPushButton::clicked, this,[=]{p->close();});
+        pos++;
+
+    }
+
+    // config maximumButton
+    if(mode & NoMaxButton){
+        maximumButton->hide();
+    }
+    else{
+        maximumButton->setGeometry(right - pos*size, 0, size, size);
+        if(!hasMaxIcon){
+            maximumButton->setStyleSheet(QString("QPushButton{font:bold;border:none;border-radius:0px}"
+                                "QPushButton:hover{color:rgb(93,94,95);background-color:%1}").arg(hover_backgroundColor));
+            maximumButton->setText("█");
+        }
+        connect(maximumButton, &QPushButton::clicked, this,[=]{
+            if(isMax){
+                p->showNormal();
+                isMax = false;
+            }else{
+                p->showMaximized();
+                isMax = true;
+            }
+        });
+        pos++;
+    }
+
+    // config minimumButton
+    if(mode & NoMinButton){
+        minimumButton->hide();
+
+    }
+    else{
+        minimumButton->setGeometry(right - pos*size, 0, size, size);
+        if(!hasMinIcon){minimumButton->setText("━");}
+        connect(minimumButton, &QPushButton::clicked, this,[=]{p->showMinimized();});
+        pos++;
     }
 }
 
@@ -116,17 +114,17 @@ void TitleBar::setTitleStyleSheet(QString styleSheet) const
 
 void TitleBar::setMinButtonStyleSheet(QString styleSheet) const
 {
-    minB->setStyleSheet(styleSheet);
+    minimumButton->setStyleSheet(styleSheet);
 }
 
 void TitleBar::setMaxButtonStyleSheet(QString styleSheet) const
 {
-    maxB->setStyleSheet(styleSheet);
+    maximumButton->setStyleSheet(styleSheet);
 }
 
 void TitleBar::setCloseButtonStyleSheet(QString styleSheet) const
 {
-    closeB->setStyleSheet(styleSheet);
+    closeButton->setStyleSheet(styleSheet);
 }
 
 void TitleBar::setTitleIcon(QString fileName) const
@@ -140,7 +138,7 @@ void TitleBar::setTitleIcon(QString fileName) const
 void TitleBar::setMinIcon(QString fileName) const
 {
     QPixmap ico = QPixmap(fileName);
-    minB->setStyleSheet(QString("background-image:%1;").arg(fileName));
+    minimumButton->setStyleSheet(QString("background-image:%1;").arg(fileName));
 
 }
 
@@ -159,7 +157,7 @@ void TitleBar::setCloseIcon(QString closeIconPath)
     QPixmap pm = QPixmap(closeIconPath).scaled(QSize(this->height(), this->height()), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     QIcon ico;
     ico.addPixmap(pm);
-    closeB->setIcon(ico);
+    closeButton->setIcon(ico);
     hasCloseIcon = true;
 }
 

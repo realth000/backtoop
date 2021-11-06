@@ -41,7 +41,7 @@
         }
     },
     DATA_JSON_DATACOUNT_NAME: allData.length(),
-    DATA_JSON_TIME_NAME: "yyyy-MM-dd HH:mm:ss"
+    DATA_JSON_TIME_NAME: DATA_JSON_TIME_FORMAT
 }
  *
 */
@@ -51,6 +51,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QDateTime>
+#include "commoninclude.h"
+#include <QtDebug>
 
 JsonParser::JsonParser()
 {
@@ -71,13 +73,13 @@ bool JsonParser::saveBackupPathDataToFile(QString filePath, BackupPathDatas allD
     QJsonObject jsonObj;
     QJsonObject jsonObjData;
     int pos = 0;
-    jsonObj.insert(DATA_JSON_TIME_NAME, QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss"));
+    jsonObj.insert(DATA_JSON_TIME_NAME, QDateTime::currentDateTime().toString(DATA_JSON_TIME_FORMAT));
     jsonObj.insert(DATA_JSON_DATACOUNT_NAME, QString::number(allData.length()));
     jsonObj.insert(DATA_JSON_ENGINEVERSION_NAME, BACKUPPATH_JSON_ENGINE_VERSION);
     foreach(BackupPathData data, allData){
         QJsonObject dataObj;
         dataObj.insert(DATA_JSON_NAME_NAME, data.name);
-        dataObj.insert(DATA_JSON_LASTMODTIME_NAME, data.lastModifyTime);
+        dataObj.insert(DATA_JSON_LASTMODTIME_NAME, data.lastBackupTime);
         dataObj.insert(DATA_JSON_SRCPATH_TIME, data.srcPath);
         dataObj.insert(DATA_JSON_DSTPATH_TIME, data.dstPath);
         jsonObjData.insert(QString::number(pos), dataObj);
@@ -119,7 +121,7 @@ BackupPathDatas JsonParser::loadBackupPathDataFromFile(QString filePath)
         BackupPathData data;
         data.id = dataKey;
         data.name = dataObj.value(DATA_JSON_NAME_NAME).toString();
-        data.lastModifyTime = dataObj.value(DATA_JSON_LASTMODTIME_NAME).toString();
+        data.lastBackupTime = dataObj.value(DATA_JSON_LASTMODTIME_NAME).toString();
         data.srcPath = dataObj.value(DATA_JSON_SRCPATH_TIME).toString();
         data.dstPath = dataObj.value(DATA_JSON_DSTPATH_TIME).toString();
         allData.append(data);

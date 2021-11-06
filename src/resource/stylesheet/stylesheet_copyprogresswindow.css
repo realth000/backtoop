@@ -24,6 +24,10 @@ QLabel{
     color:rgb(240,255,255);
 }
 
+QLabel#copyStatusLabel{
+    font:17px;
+}
+
 QProgressBar{
     color:rgb(240,255,255);
     border:1px solid rgb(55,85,100);

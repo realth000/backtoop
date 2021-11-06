@@ -56,7 +56,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QTreeView" name="srcDirTreeView">
+  <widget class="TreeViewEx" name="srcDirTreeView">
    <property name="geometry">
     <rect>
      <x>260</x>
@@ -162,29 +162,6 @@
    </property>
    <property name="text">
     <string>备份前清空</string>
-   </property>
-  </widget>
-  <widget class="QSpinBox" name="cpThreadSpinBox">
-   <property name="geometry">
-    <rect>
-     <x>80</x>
-     <y>340</y>
-     <width>42</width>
-     <height>25</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>340</y>
-     <width>41</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>线程数</string>
    </property>
   </widget>
   <widget class="QGroupBox" name="groupBox">
@@ -311,6 +288,11 @@
    <extends>QGroupBox</extends>
    <header location="global">src/utils/widget/titlebar.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TreeViewEx</class>
+   <extends>QTreeView</extends>
+   <header location="global">src/utils/widget/treeviewex.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

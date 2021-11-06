@@ -622,10 +622,24 @@ void MainUi::on_startBackupButton_clicked()
     for(int pathPos = 0; pathPos < ui->backupPathsTableWidget->rowCount(); pathPos++){
         if(bakPathChbList[pathPos]->isChecked()){
             srcPath = ui->backupPathsTableWidget->item(pathPos, 3)->text();
-            dstPath = ui->backupPathsTableWidget->item(pathPos, 4)->text();
-            if(!(QDir(srcPath)).exists() || !(QDir(dstPath)).exists()){
-                continue;
+            if(copyContentType == CopyContentType::Content){
+                dstPath = ui->backupPathsTableWidget->item(pathPos, 4)->text();
+                if(!(QDir(srcPath)).exists() || !(QDir(dstPath)).exists()){
+                    continue;
+                }
             }
+            else if(copyContentType == CopyContentType::Folder){
+                dstPath = QDir::toNativeSeparators(ui->backupPathsTableWidget->item(pathPos, 4)->text()
+                            + "/" + QFileInfo(ui->backupPathsTableWidget->item(pathPos, 3)->text()).fileName());
+                if(!(QDir(srcPath)).exists() || !(QFileInfo(dstPath).absoluteDir().exists())){
+                    continue;
+                }
+                QDir(dstPath).mkdir(dstPath);
+            }
+            else{
+                MessageBoxExY::warning("备份失败", "拷贝类型错误");
+            }
+
             getFileCount(srcPath, fileCount);
             copyTaskVector.append(CopyTask(srcPath, dstPath));
         }
@@ -712,14 +726,14 @@ void MainUi::on_savePathTableButton_clicked()
 
 void MainUi::on_cpContentRadioButton_clicked()
 {
-    copyContentType = 0;
+    copyContentType = CopyContentType::Content;
     saveConfig();
 }
 
 
 void MainUi::on_cpDirRadioButton_clicked()
 {
-    copyContentType = 1;
+    copyContentType = CopyContentType::Folder;
     saveConfig();
 }
 

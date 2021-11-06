@@ -25,6 +25,8 @@ signals:
 public slots:
     void parseCopyResult(QString filePath, CopyResult result);
     void copyResultTerminated();
+    void setCurrentFilePath(QString filePath);
+    void copyFinished();
 
 protected:
     virtual void closeEvent(QCloseEvent *e) override;

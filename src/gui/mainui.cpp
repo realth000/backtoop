@@ -579,9 +579,7 @@ void MainUi::on_backupPathsTableWidget_itemClicked(QTableWidgetItem *item)
             ui->dstDirTreeView->blockSignals(true);
             if(dstModelIndexList.contains(keyString)){
                 QModelIndexList list = dstModelIndexList[keyString];
-                qDebug() << "get expand" << list.length();
                 foreach(QModelIndex index, list){
-                    qDebug() << "exped";
                     ui->dstDirTreeView->expand(index);
                 }
             }
@@ -703,6 +701,8 @@ void MainUi::on_startBackupButton_clicked()
     connect(copyWorker, &CopyWorker::copyFileResult, copyWindow, &CopyProgressWindow::parseCopyResult);
     connect(copyWorker, &CopyWorker::copyFinished, this, &MainUi::updateBackupTime);
     connect(copyWorker, &CopyWorker::copyTerminated, copyWindow, &CopyProgressWindow::copyResultTerminated);
+    connect(copyWorker, &CopyWorker::copyCurrentFile, copyWindow, &CopyProgressWindow::setCurrentFilePath, Qt::BlockingQueuedConnection);
+    connect(copyWorker, &CopyWorker::copyFinished, copyWindow, &CopyProgressWindow::copyFinished);
 
     // quit
     QMetaObject::Connection c = connect(copyWindow, &CopyProgressWindow::terminateCopyWork, copyWorker, &CopyWorker::copyTerminate, Qt::DirectConnection);
@@ -722,6 +722,7 @@ void MainUi::on_checkSumCheckBox_clicked()
     if(ui->checkSumCheckBox->isChecked()){
         if(MessageBoxExY::Yes == MessageBoxExY::warning("校验文件", "将会在备份之后校验文件哈希值，额外耗费更多磁盘读写及更多时间，是否确定？")){
             checkFileSum = ui->checkSumCheckBox->isChecked();
+            saveConfig();
             return;
         }
         ui->checkSumCheckBox->setChecked(!ui->checkSumCheckBox->isChecked());
@@ -735,6 +736,7 @@ void MainUi::on_resetDirCheckBox_clicked()
     if(ui->resetDirCheckBox->isChecked()){
         if(MessageBoxExY::Yes == MessageBoxExY::warning("清空文件夹", "将会在备份之前先清空备份文件夹，是否确定？")){
             resetDir = ui->resetDirCheckBox->isChecked();
+            saveConfig();
             return;
         }
         ui->resetDirCheckBox->setChecked(!ui->resetDirCheckBox->isChecked());

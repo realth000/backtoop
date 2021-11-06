@@ -71,6 +71,7 @@ void CopyWorker::copyWork(QString srcPath, QString dstPath)
         QThread::sleep(1);
 #endif
         if(info.isFile()){
+            emit copyCurrentFile(info.absoluteFilePath());
             QString tmp = dstInfo.absoluteFilePath() + info.filePath().replace(srcInfo.absoluteFilePath(), "");
             qDebug() << "copy" << info.absoluteFilePath() << tmp << dstInfo.absolutePath();
             // copy success

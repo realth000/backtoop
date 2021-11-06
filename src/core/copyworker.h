@@ -22,6 +22,7 @@ signals:
     void copyFinished();
     void copyFileResult(QString filePath, CopyResult result);
     void copyTerminated();
+    void copyCurrentFile(QString filePath);
 
 private:
     CopyTaskVector taskVector;

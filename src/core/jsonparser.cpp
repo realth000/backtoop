@@ -52,6 +52,7 @@
 #include <QJsonObject>
 #include <QDateTime>
 #include "commoninclude.h"
+#include <QtDebug>
 
 JsonParser::JsonParser()
 {

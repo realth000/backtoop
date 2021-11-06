@@ -16,16 +16,19 @@ public:
 
 public slots:
     void copyStart();
+    void copyTerminate();
 
 signals:
     void copyFinished();
     void copyFileResult(QString filePath, CopyResult result);
+    void copyTerminated();
 
 private:
     CopyTaskVector taskVector;
     bool replaceFile = false;
     bool checkFileSum = false;
     bool resetDir = false;
+    bool running = true;
 
     void copyWork(QString srcPath, QString dstPath);
     void copyPostWork(QString srcPath, QString dstPath);

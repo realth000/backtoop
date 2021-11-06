@@ -4,6 +4,11 @@
 #include <QDebug>
 #include "calchash.h"
 
+//#define TEST_THREAD
+#ifdef TEST_THREAD
+#include <QThread>
+#endif
+
 CopyWorker::CopyWorker(QObject *parent) : QObject(parent)
 {
 
@@ -45,7 +50,12 @@ void CopyWorker::copyStart()
         }
         copyWork(task.first, task.second);
     }
-    emit copyFinished();
+     running ? emit copyFinished() : emit copyTerminated();
+}
+
+void CopyWorker::copyTerminate()
+{
+    running = false;
 }
 
 void CopyWorker::copyWork(QString srcPath, QString dstPath)
@@ -54,17 +64,25 @@ void CopyWorker::copyWork(QString srcPath, QString dstPath)
     QFileInfo dstInfo(dstPath);
     QFileInfoList infoList = QDir(srcPath).entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
     foreach(QFileInfo info, infoList){
+        if(!running){
+            return;
+        }
+#ifdef TEST_THREAD
+        QThread::sleep(1);
+#endif
         if(info.isFile()){
             QString tmp = dstInfo.absoluteFilePath() + info.filePath().replace(srcInfo.absoluteFilePath(), "");
             qDebug() << "copy" << info.absoluteFilePath() << tmp << dstInfo.absolutePath();
+            // copy success
             if(QFile::copy(info.filePath(), tmp)){
                 copyPostWork(info.filePath(), tmp);
                 continue;
             }
             else{
+                // copy failed
                 if(QFile(tmp).exists() && replaceFile){
                     // 复制失败，且文件已经存在
-                    qDebug() << "remove result" << QFile::remove(tmp) << tmp;
+                    QFile::remove(tmp);
                     if(QFile::copy(info.filePath(), tmp)){
                         copyPostWork(info.filePath(), tmp);
                         continue;

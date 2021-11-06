@@ -575,7 +575,7 @@ void ComboBoxStyle::drawControl(QStyle::ControlElement element, const QStyleOpti
                 // FIXME：
                 // 目前只考虑comboBox的parent背景有颜色的情况，如果parent也没颜色（透明）
                 // 是否需要再往上找？
-                const QBrush parentPainter = widget->parentWidget()->parentWidget()->parentWidget()->palette().background();
+                const QBrush parentPainter = widget->parentWidget()->parentWidget()->parentWidget()->palette().window();
                 if(parentPainter.style() == Qt::LinearGradientPattern
                     || parentPainter.style() == Qt::ConicalGradientPattern
                     || parentPainter.style() == Qt::RadialGradientPattern){
@@ -689,14 +689,14 @@ void TreeViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
                 QPoint branchPos[3];
                 // branch expanded
                 if(tvb->state & State_Open){
-                    branchPos[0] = QPoint(basePosX - 5, basePosY - 3);
-                    branchPos[1] = QPoint(basePosX    , basePosY + 3);
-                    branchPos[2] = QPoint(basePosX + 5, basePosY - 3);
+                    branchPos[0] = QPoint(basePosX - 6, basePosY - 4);
+                    branchPos[1] = QPoint(basePosX    , basePosY + 4);
+                    branchPos[2] = QPoint(basePosX + 6, basePosY - 4);
                 }
                 else{
-                    branchPos[0] = QPoint(basePosX - 3, basePosY - 5);
-                    branchPos[1] = QPoint(basePosX + 3, basePosY    );
-                    branchPos[2] = QPoint(basePosX - 3, basePosY + 5);
+                    branchPos[0] = QPoint(basePosX - 4, basePosY - 6);
+                    branchPos[1] = QPoint(basePosX + 4, basePosY    );
+                    branchPos[2] = QPoint(basePosX - 4, basePosY + 6);
                 }
                 painter->drawPolygon(branchPos, 3);
                 painter->restore();
@@ -712,10 +712,10 @@ void TreeViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
             painter->save();
             painter->setPen(Qt::transparent);
             if(tvi->state & State_MouseOver){
-                painter->setBrush(QColor(37,65,88,150));
+                painter->setBrush(QColor(37,65,88));
             }
             else if(tvi->state & State_Selected){
-                painter->setBrush(QColor(37,65,88));
+                painter->setBrush(QColor(30,59,82));
             }
             else{
                 painter->setBrush(Qt::transparent);

@@ -86,6 +86,7 @@ private:
     QWidget* addCheckBox();
     void addBackupPath(QString name, QString time, QString srcPath, QString dstPath);
     void deleteSelectedPath();
+    void deletePathAtRow(int row);
     void getFileCount(QString path, quint64 &num);
 
 private slots:
@@ -98,6 +99,7 @@ private slots:
     void getSrcModelInfoFromString(QString srcPath);
     void getDstModelInfoFromString(QString dstPath);
     void updateBackupTime();
+    void backupPathTableContextMenu(const QPoint &pos);
     void on_backupPathsTableWidget_itemClicked(QTableWidgetItem *item);
     void on_allSelectButton_clicked();
     void on_reverseSelectButton_clicked();

@@ -7,6 +7,9 @@
 #include <QScrollBar>
 #include <QThread>
 #include <QSettings>
+#include <QMenu>
+#include <QAction>
+#include <QDesktopServices>
 #include "commoninclude.h"
 #include "qssinstaller.h"
 #include "iconinstaller.h"
@@ -109,6 +112,8 @@ void MainUi::initUi()
     ui->backupPathsTableWidget->horizontalHeader()->setHighlightSections(false);
     ui->backupPathsTableWidget->horizontalScrollBar()->setStyle(hScrollBarStyle);
     ui->backupPathsTableWidget->verticalScrollBar()->setStyle(vScrollBarStyle);
+    ui->backupPathsTableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->backupPathsTableWidget, &QTableWidget::customContextMenuRequested, this, &MainUi::backupPathTableContextMenu);
 
 
     // Display log
@@ -352,14 +357,34 @@ void MainUi::deleteSelectedPath()
             if(bakChbCheckedCount <= 0){
                 break;
             }
-            qDebug() << "delete at pos" << tableRowPos;
         }
         else{
             tableRowPos++;
         }
-        qDebug() << "123";
     }
     bakChbCheckedCount = 0;
+}
+
+void MainUi::deletePathAtRow(int row)
+{
+    QString keyString = ui->backupPathsTableWidget->item(row, 3)->text() + ui->backupPathsTableWidget->item(row, 4)->text();
+    delete bakPathChbList[row];
+    bakPathChbList.removeAt(row);
+    if(srcPathWatchModelMap.value(keyString) == srcPathWatchModel){
+        srcPathWatchModel = nullptr;
+    }
+    delete srcPathWatchModelMap.value(keyString);
+    if(dstPathWatchModelMap.value(keyString) == dstPathWatchModel){
+        dstPathWatchModel = nullptr;
+    }
+    delete dstPathWatchModelMap.value(keyString);
+    srcPathWatchModelMap.remove(keyString);
+    dstPathWatchModelMap.remove(keyString);
+    srcModelIndexList.remove(keyString);
+    dstModelIndexList.remove(keyString);
+    srcMapCountMap.remove(keyString);
+    dstMapCountMap.remove(keyString);
+    ui->backupPathsTableWidget->removeRow(row);
 }
 
 // 这是计算备份路径文件夹下的文件数目（不包括文件夹）的函数
@@ -500,6 +525,28 @@ void MainUi::updateBackupTime()
         }
         pos++;
     }
+}
+
+void MainUi::backupPathTableContextMenu(const QPoint &pos)
+{
+    if(ui->backupPathsTableWidget->itemAt(pos) == nullptr){
+        return;
+    }
+    int currentRow = ui->backupPathsTableWidget->selectedItems()[0]->row();
+    QMenu *menu = new QMenu(ui->backupPathsTableWidget);
+    connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
+    QAction *act0 = new QAction("打开源文件夹", menu);
+    QAction *act1 = new QAction("打开备份文件夹", menu);
+    QAction *act2 = new QAction("删除", menu);
+    connect(act0, &QAction::triggered, this, [this, currentRow](){QDesktopServices::openUrl(ui->backupPathsTableWidget->item(currentRow, 3)->text());});
+    connect(act1, &QAction::triggered, this, [this, currentRow](){QDesktopServices::openUrl(ui->backupPathsTableWidget->item(currentRow, 4)->text());});
+    connect(act2, &QAction::triggered, this, [this, currentRow](){this->deletePathAtRow(currentRow);});
+    menu->addAction(act0);
+    menu->addAction(act1);
+    menu->addSeparator();
+    menu->addAction(act2);
+    menu->move(cursor().pos());
+    menu->show();
 }
 
 void MainUi::on_backupPathsTableWidget_itemClicked(QTableWidgetItem *item)

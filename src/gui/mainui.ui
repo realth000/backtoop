@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1320</width>
+    <width>1500</width>
     <height>830</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1320</width>
+     <width>1500</width>
      <height>30</height>
     </rect>
    </property>
@@ -31,7 +31,7 @@
     <rect>
      <x>0</x>
      <y>805</y>
-     <width>1320</width>
+     <width>1500</width>
      <height>25</height>
     </rect>
    </property>
@@ -39,9 +39,9 @@
   <widget class="QTreeView" name="dstDirTreeView">
    <property name="geometry">
     <rect>
-     <x>790</x>
-     <y>290</y>
-     <width>530</width>
+     <x>940</x>
+     <y>270</y>
+     <width>541</width>
      <height>490</height>
     </rect>
    </property>
@@ -49,9 +49,9 @@
   <widget class="QLineEdit" name="dstDirHintLineEdit">
    <property name="geometry">
     <rect>
-     <x>790</x>
-     <y>780</y>
-     <width>530</width>
+     <x>940</x>
+     <y>760</y>
+     <width>541</width>
      <height>25</height>
     </rect>
    </property>
@@ -59,9 +59,9 @@
   <widget class="TreeViewEx" name="srcDirTreeView">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>290</y>
-     <width>530</width>
+     <x>370</x>
+     <y>270</y>
+     <width>541</width>
      <height>490</height>
     </rect>
    </property>
@@ -69,9 +69,9 @@
   <widget class="QLineEdit" name="srcDirHintLineEdit">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>780</y>
-     <width>530</width>
+     <x>370</x>
+     <y>760</y>
+     <width>541</width>
      <height>25</height>
     </rect>
    </property>
@@ -79,9 +79,9 @@
   <widget class="QLabel" name="srcDirTreeViewNameLabel">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>265</y>
-     <width>530</width>
+     <x>370</x>
+     <y>245</y>
+     <width>541</width>
      <height>25</height>
     </rect>
    </property>
@@ -92,9 +92,9 @@
   <widget class="QLabel" name="dstDirTreeViewNameLabel">
    <property name="geometry">
     <rect>
-     <x>790</x>
-     <y>265</y>
-     <width>530</width>
+     <x>940</x>
+     <y>245</y>
+     <width>541</width>
      <height>25</height>
     </rect>
    </property>
@@ -105,10 +105,10 @@
   <widget class="QTableWidget" name="backupPathsTableWidget">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>30</y>
-     <width>1060</width>
-     <height>225</height>
+     <x>370</x>
+     <y>40</y>
+     <width>1111</width>
+     <height>191</height>
     </rect>
    </property>
   </widget>

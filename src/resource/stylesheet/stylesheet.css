@@ -27,18 +27,6 @@ QHeaderView::section:last{
     border-right:none;
 }
 
-QTabWidget{
-    background:rgb(35,35,35)
-}
-
-QTabBar::tab{
-    font:16px
-}
-
-QTabBar::tab:selected{
-    background-color:rgb(51,51,51)
-}
-
 QTreeView{
     font:12px;
     border:1px solid %2;
@@ -51,20 +39,20 @@ QTreeView{
 QTableWidget{
     font:15px;
     border:1px solid %2;
-    outline:2xp solid rgb(255,0,0);
-    gridline-color:%2;
+    outline:none;
+    gridline-color:transparent;
     color:rgb(230,230,230);
     background:%3
 }
 
-QTableWidget::item{
-    border:none
+QTableWidget::item:!selected{
+    color:rgb(240,255,255);
+    gridline-color:rgb(255,0,0);
 }
 
 QTableWidget::item:selected{
     color:rgb(240,255,255);
-    background-color:rgb(37,65,88);
-    outline:none;
+    background:rgb(37,65,88);
 }
 
 QLineEdit#logLineEdit{
@@ -88,7 +76,6 @@ QLineEdit#dstDirHintLineEdit{
     font:14px;
 }
 
-
 QLineEdit{
     color:rgb(240,255,255);
     background:%3;
@@ -100,7 +87,7 @@ QMenu{
     color:rgb(240,255,255);
     background:%3;
     border:1px solid %2;
-    selection-background-color:rgb(105,145,145);
+    selection-background-color:rgb(37,65,88);
 }
 
 QMenu::separator{
@@ -113,11 +100,6 @@ QTextEdit{
     border:1px solid rgb(55,85,100);
     selection-color:rgb(240,255,255);
     selection-background-color:rgb(93,94,95);
-}
-
-QTextEdit{
-    background:rgb(40,40,40);
-    border:none;
 }
 
 QGroupBox{

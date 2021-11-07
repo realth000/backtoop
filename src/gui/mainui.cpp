@@ -341,10 +341,16 @@ void MainUi::deleteSelectedPath()
     QString keyString;
     for(int tableRowPos = 0; tableRowPos < ui->backupPathsTableWidget->rowCount();){
         if(bakPathChbList[tableRowPos]->isChecked()){
-            keyString = ui->backupPathsTableWidget->item(tableRowPos, 1)->text();
+            keyString = ui->backupPathsTableWidget->item(tableRowPos, 3)->text() + ui->backupPathsTableWidget->item(tableRowPos, 4)->text();
             delete bakPathChbList[tableRowPos];
             bakPathChbList.removeAt(tableRowPos);
+            if(srcPathWatchModelMap.value(keyString) == srcPathWatchModel){
+                srcPathWatchModel = nullptr;
+            }
             delete srcPathWatchModelMap.value(keyString);
+            if(dstPathWatchModelMap.value(keyString) == dstPathWatchModel){
+                dstPathWatchModel = nullptr;
+            }
             delete dstPathWatchModelMap.value(keyString);
             srcPathWatchModelMap.remove(keyString);
             dstPathWatchModelMap.remove(keyString);

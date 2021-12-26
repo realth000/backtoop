@@ -1,3 +1,4 @@
+**This repo will no longer update，see [BackTook](https://github.com/realth000/BackTook) instead.**
 # BackToop
 * Backup tool to backup data as configured.
 * Now support Windows and Linux.
